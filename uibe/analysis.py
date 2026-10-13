@@ -156,6 +156,31 @@ def normalize(raw, segments,require_events=True,require_claims=True,strict_field
             'limitations':[str(x) for x in raw.get('limitations',[])], 'asr_issues':issues}
 
 
+def reconcile_categories(claims):
+    """Expose contradictory labels on exactly the same claim and evidence."""
+    result=[];seen={}
+    for claim in claims:
+        key=(claim['statement'],claim.get('time_horizon'),claim.get('conditions'),
+             tuple((e['segment_id'],e['quote']) for e in claim['evidence']))
+        if key not in seen:
+            seen[key]=len(result);result.append(dict(claim));continue
+        previous=result[seen[key]]
+        kinds=list(dict.fromkeys(previous.get('candidate_kinds',[previous['kind']])+claim.get('candidate_kinds',[claim['kind']])))
+        if len(kinds)>1:
+            previous.update(kind='分类待复核',candidate_kinds=kinds,
+                classification_note='同一句原话被模型分到多个类别，尚未确定：'+'、'.join(kinds))
+    return result
+
+
+def summary_fields(claims):
+    ids=[]
+    for kind in ['博主事实性主张','博主解释','博主预测','博主评价','推广']:
+        match=next((i+1 for i,c in enumerate(claims) if c['kind']==kind),None)
+        if match:ids.append(match)
+    ids=(ids+[i+1 for i,c in enumerate(claims) if i+1 not in ids and c['kind']!='分类待复核'])[:3]
+    return ids,'博主所述：'+'；'.join(claims[i-1]['statement'] for i in ids) if ids else '主张分类尚需复核，请查看下方原文'
+
+
 def combine(parts, transcript, model, elapsed):
     claims=[];events=[];seen=set()
     for part in parts:
@@ -164,14 +189,11 @@ def combine(parts, transcript, model, elapsed):
             if key not in seen:claims.append(claim);seen.add(key)
         events.extend(part['events'])
     relevant_parts=[p for p in parts if p['relevant']]
-    summary_ids=[]
-    for kind in ['博主事实性主张','博主解释','博主预测','博主评价','推广']:
-        match=next((i+1 for i,c in enumerate(claims) if c['kind']==kind),None)
-        if match:summary_ids.append(match)
-    summary_ids=(summary_ids+[i+1 for i in range(len(claims)) if i+1 not in summary_ids])[:3]
+    claims=reconcile_categories(claims)
+    summary_ids,summary=summary_fields(claims)
     return {'schema_version':3,'source_sha256':transcript['source']['sha256'],
             'title':(relevant_parts or parts)[0]['title'],
-            'summary':'博主所述：'+'；'.join(claims[i-1]['statement'] for i in summary_ids) if claims else ('未提取到明确且可追溯的主张，保留原文供复核' if relevant_parts else '\n'.join(p['summary'] for p in parts)),
+            'summary':summary if claims else ('未提取到明确且可追溯的主张，保留原文供复核' if relevant_parts else '\n'.join(p['summary'] for p in parts)),
             'summary_source_claim_ids':summary_ids,
             'relevant':any(p['relevant'] for p in parts),'claims':claims,'events':events,
             'withheld_claims':[c for p in parts for c in p.get('withheld_claims',[])],
@@ -181,6 +203,7 @@ def combine(parts, transcript, model, elapsed):
             'asr_issues':[x for p in parts for x in p['asr_issues']],
             'method':f'程序自动分析 · {model} · 尚未独立评估',
             'provenance':{'model':model,'prompt_version':PROMPT_VERSION,'chunks':len(parts),
+                          'postprocessing_version':'category-conflicts-v1',
                           'elapsed_seconds':round(elapsed,3),'independently_evaluated':False,
                           'guards':['bounded_complete_spans','arabic_numeric_coverage','literal_horizons_conditions_dates','summary_from_claims']},
             'external_checks':[]}

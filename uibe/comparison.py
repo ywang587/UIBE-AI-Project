@@ -16,7 +16,7 @@ def payload(left,right):
         return {'title':video['title'],'author_name':video.get('author_name'),
                 'published_at':video.get('published_at'),'events':a.get('events',[]),
                 'claims':[{'claim_id':i+1,**{k:c[k] for k in
-                    ['kind','statement','time_horizon','conditions','evidence','limitation'] if k in c}}
+                    ['kind','statement','time_horizon','conditions','evidence','limitation','candidate_kinds','classification_note'] if k in c}}
                     for i,c in enumerate(a['claims'])]}
     return [{'role':'system','content':SYSTEM},
             {'role':'user','content':json.dumps({'left':compact(left),'right':compact(right)},ensure_ascii=False)}]

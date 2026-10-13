@@ -1,11 +1,43 @@
 import unittest
 import json
-from uibe.analysis import normalize,combine,numeric_tokens
+from uibe.analysis import normalize,combine,numeric_tokens,reconcile_categories
 from uibe.extraction import extract_part
 from uibe.source_fields import time_quotes,amount_only
 
 
 class GroundingTests(unittest.TestCase):
+    def test_conflicting_labels_keep_one_claim_and_original_evidence(self):
+        claim={'kind':'博主事实性主张','statement':'去年储备减少',
+               'time_horizon':'去年','conditions':'未说明',
+               'evidence':[{'segment_id':1,'quote':'去年储备减少'}]}
+        future={**claim,'kind':'博主预测'}
+        other={**claim,'statement':'市场认为风险偏高','kind':'博主评价',
+               'evidence':[{'segment_id':2,'quote':'市场认为风险偏高'}]}
+        part={'relevant':True,'title':'储备讨论','claims':[claim,future,other],
+              'events':[],'limitations':[],'asr_issues':[]}
+        result=combine([part],{'source':{'sha256':'test'}},'test-model',1)
+        self.assertEqual(len(result['claims']),2)
+        first=result['claims'][0]
+        self.assertEqual(first['kind'],'分类待复核')
+        self.assertEqual(first['candidate_kinds'],['博主事实性主张','博主预测'])
+        self.assertEqual(first['evidence'],claim['evidence'])
+        self.assertEqual(claim['kind'],'博主事实性主张')
+        self.assertEqual(result['summary_source_claim_ids'],[2])
+        self.assertNotIn('去年储备减少',result['summary'])
+        self.assertEqual(reconcile_categories(result['claims']),result['claims'])
+        from uibe.comparison import payload
+        video={'title':'测试','analysis':result}
+        sent=json.loads(payload(video,video)[1]['content'])
+        self.assertIn('classification_note',sent['left']['claims'][0])
+
+    def test_different_context_or_conditions_are_not_merged_as_label_conflicts(self):
+        first={'kind':'博主解释','statement':'经济增长缓解债务压力',
+               'time_horizon':'未说明','conditions':'如果增长更快',
+               'evidence':[{'segment_id':1,'quote':'如果增长更快，经济增长缓解债务压力'}]}
+        other={**first,'kind':'博主预测','conditions':'如果利率下降'}
+        elsewhere={**first,'kind':'博主预测','evidence':[{'segment_id':8,'quote':'经济增长缓解债务压力'}]}
+        self.assertEqual(reconcile_categories([first,other,elsewhere]),[first,other,elsewhere])
+
     def test_time_expressions_are_not_conditions_or_conclusions(self):
         quote='要是再不想办法筹钱的话，公务员工资可能发不出来，政府可能关门'
         segments=[{'id':1,'text':quote}]
