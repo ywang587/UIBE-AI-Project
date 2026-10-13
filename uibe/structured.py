@@ -85,9 +85,9 @@ def events_schema(segments):
     return Events
 
 
-def comparison_schema(left,right):
-    Left=Literal[tuple(range(1,len(left['analysis']['claims'])+1))]
-    Right=Literal[tuple(range(1,len(right['analysis']['claims'])+1))]
+def comparison_schema(left,right,selected=None):
+    Left=Literal[tuple(selected['left'] if selected else range(1,len(left['analysis']['claims'])+1))]
+    Right=Literal[tuple(selected['right'] if selected else range(1,len(right['analysis']['claims'])+1))]
     class Comparison(Strict):
         same_event:bool
         same_question:bool
@@ -97,12 +97,13 @@ def comparison_schema(left,right):
         reason:str
         left_claim_ids:list[Left]=Field(max_length=4)
         right_claim_ids:list[Right]=Field(max_length=4)
+        coexistence:Literal['可以同时成立','同条件下相互排斥','依据不足']
         relation:Literal['相近','分歧','互补','无法比较']
         limitations:list[str]=Field(max_length=6)
     return Comparison
 
 
-def load_generator(model):
+def load_generator(model,kv_bits=None):
     from importlib.metadata import version
     from pathlib import Path
     import re
@@ -113,10 +114,19 @@ def load_generator(model):
     constrained=outlines.from_mlxlm(llm,tokenizer)
     def generate(messages,schema,max_tokens=3500):
         prompt=tokenizer.apply_chat_template(messages,tokenize=False,add_generation_prompt=True,enable_thinking=False)
-        return constrained(prompt,schema,max_tokens=max_tokens,sampler=make_sampler(temp=0),prefill_step_size=256,verbose=False)
+        options={}
+        if kv_bits is not None:
+            options.update(kv_bits=kv_bits,kv_group_size=64,quantized_kv_start=0)
+            last=[-1]
+            def progress(done,total):
+                quarter=min(4,done*4//max(1,total))
+                if quarter>last[0]:
+                    print(f'对照输入已读取 {done}/{total} 个词元',flush=True);last[0]=quarter
+            options['prompt_progress_callback']=progress
+        return constrained(prompt,schema,max_tokens=max_tokens,sampler=make_sampler(temp=0),prefill_step_size=256,verbose=False,**options)
     name=getattr(getattr(tokenizer,'_tokenizer',tokenizer),'name_or_path','')
     revision=Path(name).name
     generate.provenance={'mlx_lm':version('mlx-lm'),'outlines':version('outlines'),
-        'temperature':0,'thinking':False,
+        'temperature':0,'thinking':False,'kv_cache_bits':kv_bits,
         'model_revision':revision if re.fullmatch('[0-9a-f]{40}',revision) else None}
     return generate
