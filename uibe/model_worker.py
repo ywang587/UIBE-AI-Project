@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import time
 import hashlib
-from .analysis import chunks,parse_json,combine,SYSTEM,EXPERIMENTAL_VERSION
+from .analysis import contextual_chunks,parse_json,combine,SYSTEM,EXPERIMENTAL_VERSION
 from .structured import load_generator,comparison_schema,filter_content
 from .extraction import extract_part,EVENT_SYSTEM,CORRECTION_SYSTEM
 
@@ -15,7 +15,7 @@ def run(transcript, metadata, model, output, raw_dir,strict_fields=False):
     generate=load_generator(model)
     raw_dir.mkdir(parents=True,exist_ok=True)
     parts=[]
-    for index, segment_group in enumerate(chunks(transcript['segments'])):
+    for index, segment_group in enumerate(contextual_chunks(transcript['segments'])):
         relevance=filter_content(generate,segment_group)
         (raw_dir/f'chunk-{index}-relevance.json').write_text(json.dumps(relevance,ensure_ascii=False),encoding='utf-8')
         if not relevance['relevant']:
@@ -32,6 +32,8 @@ def run(transcript, metadata, model, output, raw_dir,strict_fields=False):
     result=combine(parts,transcript,model,time.monotonic()-started)
     result['provenance'].update(getattr(generate,'provenance',{}))
     result['provenance']['experimental_source_fields']=strict_fields
+    result['provenance']['input_context_segments']=12
+    result['provenance']['input_context_budget_chars']=800
     if strict_fields:result['provenance']['prompt_version']=EXPERIMENTAL_VERSION
     result['provenance']['prompts_sha256']=hashlib.sha256(('\n'.join([SYSTEM,EVENT_SYSTEM,CORRECTION_SYSTEM])).encode()).hexdigest()
     output.parent.mkdir(parents=True,exist_ok=True)

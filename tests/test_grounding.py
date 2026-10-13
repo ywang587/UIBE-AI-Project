@@ -1,11 +1,28 @@
 import unittest
 import json
-from uibe.analysis import normalize,combine,numeric_tokens,reconcile_categories
+from uibe.analysis import normalize,combine,numeric_tokens,reconcile_categories,chunks,contextual_chunks
 from uibe.extraction import extract_part
 from uibe.source_fields import time_quotes,amount_only
 
 
 class GroundingTests(unittest.TestCase):
+    def test_context_preserves_split_subject_and_every_primary_segment(self):
+        segments=[{'id':i+1,'text':t} for i,t in enumerate([
+            '到了某年','实际GDP回升到','约9325亿美元','4年增长接近40%','随后讨论其他问题','最后的内容'])]
+        primary=list(chunks(segments,max_chars=100))
+        windows=list(contextual_chunks(segments,max_chars=100,context_segments=2,context_chars=120))
+        self.assertEqual(primary[1][0]['text'],'约9325亿美元')
+        self.assertEqual(windows[1][1]['text'],'实际GDP回升到')
+        self.assertEqual(len(windows),len(primary))
+        self.assertEqual(windows[0],primary[0])
+        for window,base in zip(windows,primary):
+            self.assertEqual(window[-len(base):],base)
+            self.assertLessEqual(len(window)-len(base),2)
+            self.assertLessEqual(sum(len(s['text'])+40 for s in window[:-len(base)]),120)
+        self.assertEqual({s['id'] for w in windows for s in w},{s['id'] for s in segments})
+        self.assertEqual(list(contextual_chunks(segments,max_chars=100,context_segments=0)),primary)
+        self.assertEqual(list(contextual_chunks([])),[])
+
     def test_conflicting_labels_keep_one_claim_and_original_evidence(self):
         claim={'kind':'博主事实性主张','statement':'去年储备减少',
                'time_horizon':'去年','conditions':'未说明',

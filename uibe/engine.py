@@ -10,7 +10,7 @@ import threading
 import time
 from filelock import FileLock,Timeout as LockTimeout
 from .store import Store,now
-from .analysis import PROMPT_VERSION
+from .analysis import PROMPT_VERSION,contextual_chunks
 
 REPO=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(REPO/'scripts'))
@@ -168,7 +168,8 @@ class Engine:
         self.stage(job,'提取观点与证据')
         metadata=out/'metadata.json';metadata.write_text(json.dumps(self.store.video(vid),ensure_ascii=False))
         analysis=out/'analysis.json'
-        self.command([self.settings['python'],'-m','uibe.model_worker','--transcript',transcript,'--metadata',metadata,'--model',self.settings['model'],'--output',analysis],out/'analysis.log',1800)
+        analysis_timeout=max(1800,600*sum(1 for _ in contextual_chunks(t['segments'])))
+        self.command([self.settings['python'],'-m','uibe.model_worker','--transcript',transcript,'--metadata',metadata,'--model',self.settings['model'],'--output',analysis],out/'analysis.log',analysis_timeout)
         result=json.loads(analysis.read_text())
         if result['source_sha256']!=digest:raise ValueError('分析来源校验失败')
         from .background import supplement

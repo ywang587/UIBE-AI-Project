@@ -11,6 +11,22 @@ from uibe.engine import sha256
 
 
 class EngineIntegrationTests(unittest.TestCase):
+    def test_long_analysis_gets_more_time_than_single_chunk(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            e=Engine(tmp);source=Path(tmp)/'sample.mp4';source.write_bytes(b'media fixture')
+            vid,_=e.import_file(source);job=e.store.claim_job();digest=sha256(source)
+            transcript=Path(tmp)/'complete.json'
+            transcript.write_text(json.dumps({'source':{'sha256':digest},'settings':{'model':'medium'},
+                'segments':[{'id':i+1,'text':'宏观经济背景讨论'*12,'start':i*5,'end':(i+1)*5} for i in range(120)]}))
+            e.store.update_video(vid,transcript_path=str(transcript));budgets=[]
+            def fake_command(args,log,timeout):
+                self.assertIn('uibe.model_worker',args);budgets.append(timeout)
+                Path(args[args.index('--output')+1]).write_text(json.dumps({'source_sha256':digest,'relevant':True}))
+            with patch.object(e,'command',side_effect=fake_command):e.process(job)
+            self.assertEqual(len(budgets),1)
+            self.assertGreater(budgets[0],1800)
+            self.assertEqual(e.store.video(vid)['status'],'ready')
+
     def test_start_rechecks_even_inside_interval(self):
         with tempfile.TemporaryDirectory() as tmp:
             e=Engine(tmp);e.save_settings({'monitor_enabled':True})
