@@ -43,6 +43,8 @@ class Store:
             ''')
             if 'other_video_id' not in {r['name'] for r in db.execute('PRAGMA table_info(jobs)')}:
                 db.execute('ALTER TABLE jobs ADD COLUMN other_video_id TEXT')
+            if 'author_hash' not in {r['name'] for r in db.execute('PRAGMA table_info(videos)')}:
+                db.execute('ALTER TABLE videos ADD COLUMN author_hash TEXT')
 
     @contextmanager
     def connection(self):
@@ -74,13 +76,13 @@ class Store:
                     row=db.execute(f'SELECT id FROM videos WHERE {key}=?',(fields[key],)).fetchone()
                     if row:return row['id'],False
             vid=uid()
-            keys=['douyin_id','sha256','title','author_name','author_id','published_at','original_url','source_path','transcript_path','analysis_path']
+            keys=['douyin_id','sha256','title','author_name','author_id','author_hash','published_at','original_url','source_path','transcript_path','analysis_path']
             db.execute(f'INSERT INTO videos(id,{",".join(keys)},status,created_at,updated_at) VALUES ({",".join("?" for _ in range(len(keys)+4))})',
                        [vid]+[fields.get(k) for k in keys]+['queued',stamp,stamp])
             return vid,True
 
     def update_video(self,id,**fields):
-        allowed={'sha256','source_path','transcript_path','analysis_path','status','error','title','author_name','author_id','published_at'}
+        allowed={'sha256','source_path','transcript_path','analysis_path','status','error','title','author_name','author_id','author_hash','published_at'}
         if not set(fields)<=allowed:raise ValueError('Unknown video fields')
         fields['updated_at']=now()
         with self.connection() as db:

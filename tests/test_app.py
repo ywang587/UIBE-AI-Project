@@ -7,10 +7,18 @@ from fastapi.testclient import TestClient
 from uibe.analysis import normalize,chunks,parse_json
 from uibe.store import Store
 from uibe.server import create_app
-from uibe.comparison import normalize as normalize_comparison
+from uibe.comparison import normalize as normalize_comparison,candidates
 
 
 class AppTests(unittest.TestCase):
+    def test_same_masked_creator_is_not_a_cross_author_candidate(self):
+        analysis={'events':[{'name':'美国国债规模'}],'claims':[{'statement':'测试主张'}]}
+        current={'id':'a','author_id':'known-sec-uid','author_hash':'same','analysis':analysis}
+        same={'id':'b','author_hash':'same','analysis':analysis}
+        different={'id':'c','author_hash':'different','analysis':analysis}
+        unknown={'id':'d','analysis':None}
+        self.assertEqual([v['id'] for v in candidates(current,[same,different,unknown])],['c'])
+
     def test_queue_restart_and_duplicate_import(self):
         with tempfile.TemporaryDirectory() as tmp:
             s=Store(tmp)

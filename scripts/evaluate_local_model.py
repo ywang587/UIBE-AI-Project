@@ -9,7 +9,7 @@ import time
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from uibe.analysis import parse_json
+from uibe.analysis import parse_json,PROMPT_VERSION,EXPERIMENTAL_VERSION
 from uibe.comparison import payload,normalize as normalize_comparison
 from uibe.structured import load_generator,comparison_schema,filter_content
 from uibe.extraction import extract_part
@@ -20,6 +20,7 @@ def main():
     parser.add_argument('--model',default='mlx-community/Qwen3-4B-Instruct-2507-4bit')
     parser.add_argument('--output',type=Path,default=ROOT/'local_data/model-evaluation.json')
     parser.add_argument('--section',choices=['all','extraction','comparison'],default='all')
+    parser.add_argument('--experimental-source-fields',action='store_true')
     args=parser.parse_args()
     os.environ.setdefault('HF_HOME',str(ROOT/'local_data/model-cache'))
     generate=load_generator(args.model)
@@ -38,7 +39,7 @@ def main():
         start=time.monotonic()
         try:
             gate=filter_content(generate,case['segments'])
-            result=extract_part(generate,case['segments'],{}) if gate['relevant'] else {'relevant':False,'claims':[],'reason':gate['reason']}
+            result=extract_part(generate,case['segments'],{},strict_fields=args.experimental_source_fields) if gate['relevant'] else {'relevant':False,'claims':[],'reason':gate['reason']}
             checks={}
             if 'expected_relevant' in case:checks['relevance']=result['relevant']==case['expected_relevant']
             if 'expected_kind' in case:checks['claim_kind']=any(c['kind']==case['expected_kind'] for c in result['claims'])
@@ -66,6 +67,8 @@ def main():
         row['elapsed_seconds']=round(time.monotonic()-start,3);results.append(row)
         print(row['id'],row['passed'],row['elapsed_seconds'],flush=True)
     output={'model':args.model,'section':args.section,'independent_evaluation':False,'cases_sha256':hashlib.sha256(cases_path.read_bytes()).hexdigest(),
+            'pipeline_version':EXPERIMENTAL_VERSION if args.experimental_source_fields else PROMPT_VERSION,
+            'experimental_source_fields':args.experimental_source_fields,'inference':getattr(generate,'provenance',{}),
             'passed':sum(r['passed'] for r in results),'total':len(results),'results':results,
             'limitation':'Synthetic development checks only. Semantic correctness still requires source review.'}
     args.output.parent.mkdir(parents=True,exist_ok=True)

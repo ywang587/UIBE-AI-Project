@@ -5,12 +5,12 @@ import os
 from pathlib import Path
 import time
 import hashlib
-from .analysis import chunks,parse_json,combine,SYSTEM
+from .analysis import chunks,parse_json,combine,SYSTEM,EXPERIMENTAL_VERSION
 from .structured import load_generator,comparison_schema,filter_content
 from .extraction import extract_part,EVENT_SYSTEM,CORRECTION_SYSTEM
 
 
-def run(transcript, metadata, model, output, raw_dir):
+def run(transcript, metadata, model, output, raw_dir,strict_fields=False):
     started=time.monotonic()
     generate=load_generator(model)
     raw_dir.mkdir(parents=True,exist_ok=True)
@@ -26,11 +26,13 @@ def run(transcript, metadata, model, output, raw_dir):
             continue
         def save(name,text):
             (raw_dir/f'chunk-{index}-{name}').write_text(text,encoding='utf-8')
-        part=extract_part(generate,segment_group,metadata,save)
+        part=extract_part(generate,segment_group,metadata,save,strict_fields=strict_fields)
         parts.append(part)
         print(f'已分析 {index+1} 段输入',flush=True)
     result=combine(parts,transcript,model,time.monotonic()-started)
     result['provenance'].update(getattr(generate,'provenance',{}))
+    result['provenance']['experimental_source_fields']=strict_fields
+    if strict_fields:result['provenance']['prompt_version']=EXPERIMENTAL_VERSION
     result['provenance']['prompts_sha256']=hashlib.sha256(('\n'.join([SYSTEM,EVENT_SYSTEM,CORRECTION_SYSTEM])).encode()).hexdigest()
     output.parent.mkdir(parents=True,exist_ok=True)
     staging=output.with_suffix('.tmp')
@@ -65,9 +67,10 @@ if __name__=='__main__':
     p.add_argument('--metadata',type=Path)
     p.add_argument('--model',required=True)
     p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--experimental-source-fields',action='store_true')
     a=p.parse_args()
     if a.compare:compare(json.loads(a.compare.read_text()),a.model,a.output)
     elif a.transcript:
         run(json.loads(a.transcript.read_text()),json.loads(a.metadata.read_text()) if a.metadata else {},
-            a.model,a.output,a.output.parent/'model-output')
+            a.model,a.output,a.output.parent/'model-output',strict_fields=a.experimental_source_fields)
     else:p.error('Provide --transcript or --compare')

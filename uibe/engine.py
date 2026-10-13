@@ -132,7 +132,12 @@ class Engine:
             metadata=[r for p in downloaded.glob('douyin/jsonl/*.jsonl') for r in read_jsonl(p) if r.get('aweme_id')==video['douyin_id']]
             if not metadata:raise RuntimeError('视频已下载，但缺少对应详情')
             r=metadata[-1]
-            self.store.update_video(vid,source_path=str(source),title=r.get('desc','视频')[:180],author_name=r.get('nickname'),author_id=r.get('sec_uid') or r.get('user_id'),published_at=r.get('create_time'))
+            name=r.get('nickname') or video.get('author_name')
+            if name and '*' in name and video.get('author_name'):
+                name=video['author_name']
+            self.store.update_video(vid,source_path=str(source),title=r.get('desc','视频')[:180],
+                author_name=name,author_id=video.get('author_id') or r.get('sec_uid') or r.get('user_id'),
+                author_hash=r.get('creator_hash') or video.get('author_hash'),published_at=r.get('create_time'))
         digest=sha256(source)
         duplicate=next((r for r in self.store.all('videos') if r['sha256']==digest and r['id']!=vid),None)
         if duplicate:
@@ -166,6 +171,11 @@ class Engine:
         self.command([self.settings['python'],'-m','uibe.model_worker','--transcript',transcript,'--metadata',metadata,'--model',self.settings['model'],'--output',analysis],out/'analysis.log',1800)
         result=json.loads(analysis.read_text())
         if result['source_sha256']!=digest:raise ValueError('分析来源校验失败')
+        from .background import supplement
+        result=supplement(result,self.store.video(vid)['title'])
+        temp=analysis.with_suffix('.background.tmp')
+        temp.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+        os.replace(temp,analysis)
         self.store.update_video(vid,analysis_path=str(analysis),status='ready' if result['relevant'] else 'irrelevant',error=None)
 
     def with_analysis(self,v):

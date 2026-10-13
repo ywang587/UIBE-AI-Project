@@ -2,9 +2,32 @@ import unittest
 import json
 from uibe.analysis import normalize,combine,numeric_tokens
 from uibe.extraction import extract_part
+from uibe.source_fields import time_quotes,amount_only
 
 
 class GroundingTests(unittest.TestCase):
+    def test_time_expressions_are_not_conditions_or_conclusions(self):
+        quote='要是再不想办法筹钱的话，公务员工资可能发不出来，政府可能关门'
+        segments=[{'id':1,'text':quote}]
+        claim={'kind':'博主预测','statement':quote,'span':{'start_id':1,'end_id':1},
+               'time_horizon':quote,'conditions':'要是再不想办法筹钱的话'}
+        with self.assertRaisesRegex(ValueError,'不能把条件'):normalize(self.raw(claim),segments,strict_fields=True)
+        claim['time_horizon']='未说明'
+        self.assertEqual(normalize(self.raw(claim),segments)['claims'][0]['conditions'],'要是再不想办法筹钱的话')
+        for phrase in ['不到一个月','这半年','未来三个月','过去17年','从2022年3月到2023年7月',
+                       '2026年10月1日','2026年第三季度','近3-5年','长期']:
+            with self.subTest(phrase=phrase):self.assertIn(phrase,time_quotes([{'text':phrase}]))
+
+    def test_amounts_are_not_asset_names(self):
+        for value in ['65亿美元','6.5%','三万亿卢比','百分之十','1,000万元']:
+            self.assertTrue(amount_only(value),value)
+        for value in ['美元','国企股份','标普500指数','纳斯达克100指数','10年期美债']:
+            self.assertFalse(amount_only(value),value)
+        segments=[{'id':1,'text':'出售国企股份获得65亿美元'}]
+        claim={'kind':'博主事实性主张','statement':'出售国企股份获得65亿美元','segment_ids':[1]}
+        events=[{'name':'股份出售','assets':['65亿美元'],'segment_ids':[1]}]
+        with self.assertRaisesRegex(ValueError,'资产名称不能填金额'):normalize(self.raw(claim,events),segments,strict_fields=True)
+
     def raw(self,claim,events=None):
         if events is None:
             reference={'span':dict(claim['span'])} if 'span' in claim else {'segment_ids':list(claim['segment_ids'])}

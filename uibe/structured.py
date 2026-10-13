@@ -1,6 +1,7 @@
 """Constrain syntax and reference choices, without claiming semantic correctness."""
 from typing import Literal
 from pydantic import BaseModel,ConfigDict,Field
+from .source_fields import time_quotes
 
 
 class Strict(BaseModel):
@@ -23,8 +24,9 @@ def filter_content(generate,segments):
     return Relevance.model_validate_json(generate(messages,Relevance,max_tokens=400)).model_dump()
 
 
-def claim_schema(segments):
+def claim_schema(segments,restrict_time=False):
     Reference=Literal[tuple(s['id'] for s in segments)]
+    TimeQuote=Literal[tuple(['未说明',*time_quotes(segments)])] if restrict_time else str
     Uncertainty=Literal['原文未说明信息来源','原文未说明具体日期','原文未说明适用条件',
                         '原文未展示因果检验','数值或术语需回听','原文存在含糊表述',
                         '尚未外部核查','原文未明确其他限制']
@@ -34,7 +36,7 @@ def claim_schema(segments):
     class Claim(Strict):
         span:Span
         statement:str
-        time_range_quote:str
+        time_range_quote:TimeQuote
         explicit_if_quote:str
         limitation:Uncertainty
     return Claim
@@ -52,8 +54,8 @@ def extraction_schema(segments):
     return Extraction
 
 
-def correction_schema(segments):
-    Claim=claim_schema(segments)
+def correction_schema(segments,restrict_time=False):
+    Claim=claim_schema(segments,restrict_time=restrict_time)
     class Correction(Strict):
         claim:Claim|None
     return Correction

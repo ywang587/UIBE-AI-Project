@@ -11,6 +11,7 @@ def main():
     p.add_argument('crawler', type=Path)
     p.add_argument('video_id')
     p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--metadata-only',action='store_true',help='Read public video details without downloading media again')
     a=p.parse_args()
     if not a.video_id.isdigit():
         p.error('video_id must contain digits only')
@@ -25,7 +26,7 @@ def main():
         raise RuntimeError('UIBE_LOGIN_REQUIRED: existing session unavailable; manual login required')
     DouYinLogin.begin=stop_for_login
     sys.argv=['main.py','--platform','dy','--lt','qrcode','--type','detail',
-              '--specified_id',a.video_id,'--headless','true','--get_media','true',
+              '--specified_id',a.video_id,'--headless','true','--get_media','false' if a.metadata_only else 'true',
               '--get_comment','false','--save_data_path',str(output)]
     runpy.run_path(str(crawler/'main.py'),run_name='__main__')
 

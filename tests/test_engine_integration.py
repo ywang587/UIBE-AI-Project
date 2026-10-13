@@ -79,4 +79,26 @@ class EngineIntegrationTests(unittest.TestCase):
             self.assertEqual(json.loads(Path(e.store.video(vid)['transcript_path']).read_text())['settings']['model'],'medium')
             self.assertEqual(json.loads(old.read_text())['settings']['model'],'small')
 
+    def test_masked_download_metadata_preserves_known_creator(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            e=Engine(tmp);dyid='7693573120950603018'
+            vid,_=e.store.add_video(douyin_id=dyid,title='等待下载',author_name='已关注的作者',author_id='known-sec-uid')
+            e.store.enqueue('process',video_id=vid);job=e.store.claim_job()
+            def fake_command(args,log,timeout=3600):
+                output=Path(args[args.index('--output')+1])
+                if 'uibe.model_worker' in args:
+                    output.write_text(json.dumps({'source_sha256':sha256(Path(e.store.video(vid)['source_path'])),'relevant':True}))
+                elif any('probe_download.py' in str(x) for x in args):
+                    media=output/'dy/media'/dyid/'video.mp4';media.parent.mkdir(parents=True);media.write_bytes(b'media')
+                    meta=output/'douyin/jsonl/details.jsonl';meta.parent.mkdir(parents=True)
+                    meta.write_text(json.dumps({'aweme_id':dyid,'desc':'标题','nickname':'已***者','creator_hash':'stable-hash','create_time':100}))
+                else:
+                    target=output/'complete/transcript.json';target.parent.mkdir(parents=True)
+                    target.write_text(json.dumps({'source':{'sha256':sha256(Path(e.store.video(vid)['source_path']))},'settings':{'model':'medium'},'segments':[]}))
+            with patch.object(e,'command',side_effect=fake_command):e.process(job)
+            result=e.store.video(vid)
+            self.assertEqual(result['author_name'],'已关注的作者')
+            self.assertEqual(result['author_id'],'known-sec-uid')
+            self.assertEqual(result['author_hash'],'stable-hash')
+
 if __name__=='__main__':unittest.main()

@@ -42,8 +42,9 @@ def candidates(current,others,limit=2):
     if not query or not a.get('claims'):return []
     ranked=[]
     for other in others:
-        if current['id']==other['id'] or not other.get('analysis',{}).get('claims'):continue
+        if current['id']==other['id'] or not (other.get('analysis') or {}).get('claims'):continue
         if current.get('author_id') and current['author_id']==other.get('author_id'):continue
+        if current.get('author_hash') and current['author_hash']==other.get('author_hash'):continue
         tokens=bigrams(' '.join(e['name'] for e in other['analysis'].get('events',[])))
         score=len(query & tokens)/max(1,len(query | tokens))
         if score>=.06:ranked.append((score,other))
