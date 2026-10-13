@@ -167,10 +167,10 @@ def create_app(data_root=None,start_worker=True):
     @app.post('/api/creators/{id}/videos/{video_id}/import')
     def import_discovery(id,video_id):
         rows=engine.store.pending_discoveries(id)
-        if not any(x['video_id']==video_id for x in rows):raise HTTPException(404,'未找到该发现记录')
-        result=engine.import_links('https://www.douyin.com/video/'+video_id)
-        engine.store.mark_discovery_queued(id,video_id)
-        return result
+        row=next((x for x in rows if x['video_id']==video_id),None)
+        creator=engine.store.creator(id)
+        if row is None or creator is None:raise HTTPException(404,'未找到该发现记录')
+        return [engine.import_discovery(creator,row)]
     class Settings(BaseModel):values:dict
     @app.post('/api/settings')
     def settings(body:Settings):engine.save_settings(body.values);return {'ok':True}

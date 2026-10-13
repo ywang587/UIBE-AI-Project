@@ -11,6 +11,30 @@ from uibe.comparison import normalize as normalize_comparison,candidates
 
 
 class AppTests(unittest.TestCase):
+    def test_manual_discovery_import_keeps_creator_and_reuses_existing_job(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app=create_app(tmp,start_worker=False);s=app.state.engine.store
+            cid=s.add_creator('https://www.douyin.com/user/known-sec-uid','已关注的作者')
+            rows=[{'video_id':str(7695692306247499738+i),'published_at':100+i,'title':'已发现视频'} for i in range(2)]
+            s.save_discovery(cid,{'videos':rows,'complete':True,'checked_at_epoch':200})
+            existing=app.state.engine.import_links('https://www.douyin.com/video/'+rows[1]['video_id'])[0]
+            s.update_video(existing['id'],author_name='已***者',author_hash='stable-hash')
+            with TestClient(app) as client:
+                for i,row in enumerate(rows):
+                    url=f"/api/creators/{cid}/videos/{row['video_id']}/import"
+                    response=client.post(url)
+                    self.assertEqual(response.status_code,200)
+                    result=response.json()[0];video=s.video(result['id'])
+                    self.assertEqual(result['created'],i==0)
+                    self.assertEqual(video['author_id'],'known-sec-uid')
+                    self.assertEqual(video['author_name'],'已关注的作者')
+                    self.assertEqual(video['published_at'],row['published_at'])
+                    self.assertEqual(client.post(url).status_code,404)
+                self.assertEqual(s.video(existing['id'])['author_hash'],'stable-hash')
+                self.assertEqual(len(s.all('videos')),2)
+                self.assertEqual(len(s.all('jobs')),2)
+                self.assertEqual(s.pending_discoveries(cid),[])
+
     def test_same_masked_creator_is_not_a_cross_author_candidate(self):
         analysis={'events':[{'name':'美国国债规模'}],'claims':[{'statement':'测试主张'}]}
         current={'id':'a','author_id':'known-sec-uid','author_hash':'same','analysis':analysis}

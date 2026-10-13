@@ -217,9 +217,22 @@ class Engine:
         result=json.loads(response.read_text());self.store.save_discovery(creator['id'],result)
         if self.settings['auto_process_discoveries']:
             for row in self.store.pending_discoveries(creator['id']):
-                vid,created=self.store.add_video(douyin_id=row['video_id'],title=row['title'][:180] or '新视频',author_name=creator['name'],author_id=creator['url'].rsplit('/',1)[-1],published_at=row['published_at'],original_url='https://www.douyin.com/video/'+row['video_id'])
-                if created:self.store.enqueue('process',video_id=vid)
-                self.store.mark_discovery_queued(creator['id'],row['video_id'])
+                self.import_discovery(creator,row)
+
+    def import_discovery(self,creator,row):
+        author_id=creator['url'].rstrip('/').rsplit('/',1)[-1]
+        vid,created=self.store.add_video(douyin_id=row['video_id'],title=row['title'][:180] or '新视频',
+            author_name=creator['name'],author_id=author_id,published_at=row['published_at'],
+            original_url='https://www.douyin.com/video/'+row['video_id'])
+        if created:self.store.enqueue('process',video_id=vid)
+        else:
+            video=self.store.video(vid);updates={}
+            if not video.get('author_id'):updates['author_id']=author_id
+            if not video.get('author_name') or '*' in video['author_name']:updates['author_name']=creator['name']
+            if not video.get('published_at') and row['published_at']:updates['published_at']=row['published_at']
+            if updates:self.store.update_video(vid,**updates)
+        self.store.mark_discovery_queued(creator['id'],row['video_id'])
+        return {'id':vid,'created':created}
 
     def schedule(self):
         if not self.settings['monitor_enabled']:return
