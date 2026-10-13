@@ -1,6 +1,6 @@
 # 运行与换设备接续
 
-本阶段提供可以单独运行的链接读取、媒体检查、中文转录和证据报告工具。分析报告接收已有分析 JSON，不会自动调用分析模型。原始视频、文字稿、登录状态和机器配置只留在本地。
+本文介绍可单独运行的链接读取、媒体检查、中文转录和证据报告工具。完整应用、自动本地分析与关注更新见 [观潮安装与使用](APP.md)。原始视频、文字稿、登录状态和机器配置只留在本地。
 
 ## 安装转录环境
 
@@ -10,7 +10,7 @@
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-python -m unittest discover -s tests -v
+python -m unittest discover -s tests -p test_pipeline.py -v
 ```
 
 Windows 使用 `.venv\Scripts\activate` 激活。以上固定版本已在 macOS arm64 实测；Windows、Linux 和 CUDA 尚未验证。跨设备需重新创建虚拟环境，不能把复制后的 `.venv` 当作可移植程序。
@@ -41,7 +41,7 @@ python scripts/evidence_report.py /path/to/transcript.json /path/to/analysis.jso
 
 报告检查视频哈希、转录来源和逐条引文，然后生成本地 HTML，可在浏览器中点击时间定位原视频。HTML 使用当前设备的本地视频地址，换设备后需要重新生成。引文存在只能证明引用位置有效，不能证明推理或分类正确。
 
-当前没有自动分析模型、外部核查接口或跨视频比较器。`method` 应明确写出分析由谁以何种方式产生；开发 AI 整理的样例不能写成程序自动分析的结果。
+此报告工具本身不调用模型；自动分析与历史对照由观潮应用提供。目前没有自动外部核查接口。`method` 应明确写出分析由谁以何种方式产生；开发 AI 整理的样例不能写成程序自动分析的结果。
 
 ## MediaCrawler 与课程材料
 
