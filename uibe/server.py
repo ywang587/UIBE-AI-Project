@@ -10,6 +10,7 @@ from fastapi import FastAPI,HTTPException,Request
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from .engine import Engine,REPO
+from .display import reading_copy
 
 
 def create_app(data_root=None,start_worker=True):
@@ -46,13 +47,14 @@ def create_app(data_root=None,start_worker=True):
     @app.get('/style.css')
     def style():return FileResponse(REPO/'web/style.css',media_type='text/css')
     @app.get('/api/state')
-    def state():
-        return {'videos':engine.store.all('videos'),'jobs':engine.store.all('jobs'),
+    def state(simplified:bool=False):
+        data={'videos':engine.store.all('videos'),'jobs':engine.store.all('jobs'),
                 'creators':engine.store.all('creators'),'settings':engine.settings,
-                'discoveries':{c['id']:engine.store.pending_discoveries(c['id']) for c in engine.store.all('creators')},
+                'discoveries':{c['id']:engine.store.discovery_history(c['id']) for c in engine.store.all('creators')},
                 'comparisons':engine.store.all('comparisons')}
+        return reading_copy(data) if simplified else data
     @app.get('/api/brief')
-    def brief():
+    def brief(simplified:bool=False):
         rows=[]
         for video in engine.store.all('videos'):
             path=video.get('analysis_path')
@@ -63,9 +65,10 @@ def create_app(data_root=None,start_worker=True):
                 claims=[c for c in analysis['claims'] if ids.intersection(e['segment_id'] for e in c['evidence'])]
                 rows.append({'video_id':video['id'],'video_title':video['title'],'author':video['author_name'],
                              'event':event,'claims':claims,'published_at':video['published_at']})
-        return {'events':rows,'scope':'所选博主与已导入内容，不是完整市场新闻'}
+        data={'events':rows,'scope':'所选博主与已导入内容，不是完整市场新闻'}
+        return reading_copy(data) if simplified else data
     @app.get('/api/videos/{id}')
-    def detail(id):
+    def detail(id,simplified:bool=False):
         r=get_video(id)
         for name in ['transcript','analysis']:
             path=r.get(name+'_path')
@@ -91,7 +94,7 @@ def create_app(data_root=None,start_worker=True):
                 item[side+'_claims']=[claims[i-1] for i in data.get(side+'_claim_ids',[]) if 0<i<=len(claims)]
             comparisons.append(item)
         r['comparisons']=comparisons
-        return r
+        return reading_copy(r) if simplified else r
     @app.get('/api/videos/{id}/media')
     def media(id):
         r=get_video(id);path=Path(r['source_path']) if r['source_path'] else None

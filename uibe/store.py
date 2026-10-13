@@ -145,6 +145,14 @@ class Store:
     def pending_discoveries(self,id):
         with self.connection() as db:return [dict(r) for r in db.execute('SELECT * FROM discoveries WHERE creator_id=? AND queued=0',(id,))]
 
+    def discovery_history(self,id):
+        with self.connection() as db:
+            return [dict(r) for r in db.execute('''
+                SELECT d.*, v.id AS local_video_id, v.status AS status
+                FROM discoveries d LEFT JOIN videos v ON v.douyin_id=d.video_id
+                WHERE d.creator_id=? ORDER BY d.published_at DESC,d.video_id DESC
+            ''',(id,))]
+
     def mark_discovery_queued(self,creator_id,video_id):
         with self.connection() as db:db.execute('UPDATE discoveries SET queued=1 WHERE creator_id=? AND video_id=?',(creator_id,video_id))
 
