@@ -29,3 +29,5 @@ local_data/
 credentials*.json
 cookies*.json
 cookies*.txt
+.uibe-local.env
+*.before-portability
