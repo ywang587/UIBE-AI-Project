@@ -1,0 +1,20 @@
+{
+  "purpose": "Synthetic positive and negative controls for automated source consistency; not independent financial accuracy evaluation",
+  "cases": [
+    {"id":"supported_fact","source":"本月外汇储备减少了500亿美元。","statement":"本月外汇储备减少500亿美元。","time_horizon":"本月","expected_support":true,"expected_kind":"博主事实性主张"},
+    {"id":"missing_actor_action","source":"油价上涨，美债收益率上升，卢比汇率走弱。","statement":"央行在现货市场抛售美元。","expected_support":false},
+    {"id":"new_causal_link","source":"油价上涨，同时卢比汇率走弱。","statement":"油价上涨导致卢比汇率走弱。","expected_support":false},
+    {"id":"reversed_cause","source":"博主认为，油价上涨增加进口成本，从而对卢比形成压力。","statement":"卢比走弱导致油价上涨。","expected_support":false},
+    {"id":"wrong_causal_target","source":"尽管央行持续干预，但受油价高企及外资撤出影响，卢比仍在走弱。","statement":"油价高企和外资撤出导致央行持续干预。","expected_support":false},
+    {"id":"supported_explanation","source":"博主认为，油价上涨增加进口成本，从而对卢比形成压力。","statement":"博主将卢比压力解释为油价上涨带来的进口成本增加。","expected_support":true,"expected_kind":"博主解释"},
+    {"id":"condition_and_certainty_changed","source":"如果政策落实，我预计未来三个月人民币可能升值。","statement":"政策已经落实，人民币一定升值。","expected_support":false},
+    {"id":"conditional_prediction","source":"如果政策落实，我预计未来三个月人民币可能升值。","statement":"如果政策落实，博主预计人民币未来三个月可能升值。","conditions":"如果政策落实","time_horizon":"未来三个月","expected_support":true,"expected_kind":"博主预测"},
+    {"id":"historical_data_not_explanation","source":"从2022年3月到2023年7月，累计加息11次，共525个基点。","statement":"从2022年3月到2023年7月累计加息11次，共525个基点。","time_horizon":"从2022年3月到2023年7月","expected_support":true,"expected_kind":"博主事实性主张"},
+    {"id":"evaluation_not_fact","source":"我认为这家公司的表现非常糟糕。","statement":"博主认为公司表现非常糟糕。","expected_support":true,"expected_kind":"博主评价"},
+    {"id":"advice_not_promotion","source":"投资前要看清资产集中度，不要购买自己不理解的产品。","statement":"博主建议投资前核对集中度并避免购买不理解的产品。","expected_support":true,"expected_kind":"博主评价"},
+    {"id":"explicit_promotion","source":"需要资产配置咨询的朋友，可以私信我预约付费服务。","statement":"博主邀请观众私信预约付费资产配置咨询。","expected_support":true,"expected_kind":"推广"},
+    {"id":"negation_changed","source":"央行没有降息。","statement":"央行已经降息。","expected_support":false},
+    {"id":"support_is_not_truth","source":"我预测该国明年GDP增长1000%。","statement":"博主预测该国明年GDP增长1000%。","time_horizon":"明年","expected_support":true,"expected_kind":"博主预测"},
+    {"id":"attribution_changed","source":"有人预测黄金会下跌，但我不同意。","statement":"博主预测黄金会下跌。","expected_support":false}
+  ]
+}

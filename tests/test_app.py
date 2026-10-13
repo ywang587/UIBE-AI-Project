@@ -40,7 +40,7 @@ class AppTests(unittest.TestCase):
 
     def test_analysis_cannot_invent_quote_or_citation(self):
         seg=[{'id':1,'text':'预计短期回落'},{'id':2,'text':'长期仍不确定'}]
-        raw={'relevant':True,'title':'test','summary':'','events':[],
+        raw={'relevant':True,'title':'test','summary':'','events':[{'name':'走势讨论','segment_ids':[1]}],
              'claims':[{'kind':'博主预测','statement':'短期可能回落','segment_ids':[1]}]}
         result=normalize(raw,seg);self.assertEqual(result['claims'][0]['evidence'][0]['quote'],'预计短期回落')
         raw['claims'][0]['segment_ids']=[99]
@@ -96,6 +96,19 @@ class AppTests(unittest.TestCase):
                 again=client.post('/api/compare',json={'left_id':b,'right_id':a})
                 self.assertEqual(pair.json()['job_id'],again.json()['job_id'])
                 self.assertEqual(client.post('/api/compare',json={'left_id':a,'right_id':a}).status_code,400)
+
+    def test_empty_claims_cannot_enter_comparison_queue(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            app=create_app(tmp,start_worker=False);s=app.state.engine.store
+            path=Path(tmp)/'analysis.json';path.write_text(json.dumps({'claims':[],'events':[]}))
+            a,_=s.add_video(title='没有明确主张',analysis_path=str(path))
+            b,_=s.add_video(title='另一条视频',analysis_path=str(path))
+            for id in [a,b]:s.update_video(id,status='ready')
+            with TestClient(app) as client:
+                response=client.post('/api/compare',json={'left_id':a,'right_id':b})
+                self.assertEqual(response.status_code,400)
+                self.assertIn('没有可用于对照的主张',response.json()['detail'])
+                self.assertEqual(client.get('/api/state').json()['jobs'],[])
 
     def test_reimport_restores_missing_source_without_losing_upload(self):
         with tempfile.TemporaryDirectory() as tmp:

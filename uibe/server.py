@@ -115,6 +115,10 @@ def create_app(data_root=None,start_worker=True):
         if body.left_id==body.right_id:raise ValueError('请选择两条不同视频')
         left=get_video(body.left_id);right=get_video(body.right_id)
         if left['status']!='ready' or right['status']!='ready':raise ValueError('只能对照两条已完成的财经视频')
+        for video in [left,right]:
+            path=video.get('analysis_path')
+            if not path or not Path(path).exists() or not json.loads(Path(path).read_text()).get('claims'):
+                raise ValueError('这条视频没有可用于对照的主张，请先查看原文和待复核内容')
         return {'job_id':engine.store.enqueue('compare',video_id=left['id'],other_video_id=right['id'])}
     @app.post('/api/import/links')
     def links(body:Links):return {'videos':engine.import_links(body.text)}

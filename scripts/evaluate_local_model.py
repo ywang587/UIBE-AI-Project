@@ -9,9 +9,10 @@ import time
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from uibe.analysis import messages,parse_json,normalize
+from uibe.analysis import parse_json
 from uibe.comparison import payload,normalize as normalize_comparison
-from uibe.structured import load_generator,extraction_schema,comparison_schema,filter_content
+from uibe.structured import load_generator,comparison_schema,filter_content
+from uibe.extraction import extract_part
 
 
 def main():
@@ -37,7 +38,7 @@ def main():
         start=time.monotonic()
         try:
             gate=filter_content(generate,case['segments'])
-            result=ask(messages(case['segments'],{}),extraction_schema(case['segments']),lambda raw:normalize(raw,case['segments'])) if gate['relevant'] else {'relevant':False,'claims':[],'reason':gate['reason']}
+            result=extract_part(generate,case['segments'],{}) if gate['relevant'] else {'relevant':False,'claims':[],'reason':gate['reason']}
             checks={}
             if 'expected_relevant' in case:checks['relevance']=result['relevant']==case['expected_relevant']
             if 'expected_kind' in case:checks['claim_kind']=any(c['kind']==case['expected_kind'] for c in result['claims'])

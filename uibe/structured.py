@@ -23,34 +23,64 @@ def filter_content(generate,segments):
     return Relevance.model_validate_json(generate(messages,Relevance,max_tokens=400)).model_dump()
 
 
-def extraction_schema(segments):
+def claim_schema(segments):
     Reference=Literal[tuple(s['id'] for s in segments)]
+    Uncertainty=Literal['原文未说明信息来源','原文未说明具体日期','原文未说明适用条件',
+                        '原文未展示因果检验','数值或术语需回听','原文存在含糊表述',
+                        '尚未外部核查','原文未明确其他限制']
+    class Span(Strict):
+        start_id:Reference
+        end_id:Reference
     class Claim(Strict):
-        kind:Literal['博主事实性主张','博主解释','博主评价','博主预测','推广']
-        # Select evidence before writing a statement supported by those passages.
-        segment_ids:list[Reference]=Field(min_length=1,max_length=4)
+        span:Span
         statement:str
-        time_horizon:str
-        conditions:str
-        limitation:str
+        time_range_quote:str
+        explicit_if_quote:str
+        limitation:Uncertainty
+    return Claim
+
+
+def extraction_schema(segments):
+    Claim=claim_schema(segments)
+    class Extraction(Strict):
+        title:str
+        facts:list[Claim]=Field(max_length=4)
+        explanations:list[Claim]=Field(max_length=4)
+        evaluations:list[Claim]=Field(max_length=3)
+        predictions:list[Claim]=Field(max_length=3)
+        promotions:list[Claim]=Field(max_length=2)
+    return Extraction
+
+
+def correction_schema(segments):
+    Claim=claim_schema(segments)
+    class Correction(Strict):
+        claim:Claim|None
+    return Correction
+
+
+class ClaimReview(Strict):
+    issues:list[str]=Field(max_length=4)
+    causal_alignment:Literal['未涉及因果','与原文一致','改变了因果','原文不足以判断']
+    modality_alignment:Literal['一致','改变了确定性或条件','原文不足以判断']
+    speaker_alignment:Literal['一致','改变了主体','原文不足以判断']
+    recommended_kind:Literal['博主事实性主张','博主解释','博主评价','博主预测','推广']
+    support:Literal['完整支持','部分支持','不支持','与原文矛盾','原文不清楚']
+
+
+def events_schema(segments):
+    Reference=Literal[tuple(s['id'] for s in segments)]
+    class Span(Strict):
+        start_id:Reference
+        end_id:Reference
     class Event(Strict):
-        name:str
+        span:Span
+        name:str=Field(max_length=40)
         date:str
         assets:list[str]=Field(max_length=8)
-        segment_ids:list[Reference]=Field(min_length=1,max_length=4)
-    class Issue(Strict):
-        segment_id:Reference
-        suspect:str
-        note:str
-    class Extraction(Strict):
-        relevant:bool
-        title:str
-        claims:list[Claim]=Field(max_length=8)
-        summary:str
-        events:list[Event]=Field(max_length=6)
-        limitations:list[str]=Field(max_length=8)
-        asr_issues:list[Issue]=Field(max_length=8)
-    return Extraction
+    class Events(Strict):
+        events:list[Event]=Field(min_length=1,max_length=3)
+    return Events
 
 
 def comparison_schema(left,right):
@@ -71,12 +101,20 @@ def comparison_schema(left,right):
 
 
 def load_generator(model):
+    from importlib.metadata import version
+    from pathlib import Path
+    import re
     import outlines
     from mlx_lm import load
     from mlx_lm.sample_utils import make_sampler
     llm,tokenizer=load(model,tokenizer_config={'trust_remote_code':False})
     constrained=outlines.from_mlxlm(llm,tokenizer)
     def generate(messages,schema,max_tokens=3500):
-        prompt=tokenizer.apply_chat_template(messages,tokenize=False,add_generation_prompt=True)
+        prompt=tokenizer.apply_chat_template(messages,tokenize=False,add_generation_prompt=True,enable_thinking=False)
         return constrained(prompt,schema,max_tokens=max_tokens,sampler=make_sampler(temp=0),prefill_step_size=256,verbose=False)
+    name=getattr(getattr(tokenizer,'_tokenizer',tokenizer),'name_or_path','')
+    revision=Path(name).name
+    generate.provenance={'mlx_lm':version('mlx-lm'),'outlines':version('outlines'),
+        'temperature':0,'thinking':False,
+        'model_revision':revision if re.fullmatch('[0-9a-f]{40}',revision) else None}
     return generate

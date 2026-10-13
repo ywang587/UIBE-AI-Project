@@ -1,11 +1,13 @@
 """Integration checks with a fake external process, never reported as model quality."""
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
 from uibe.engine import Engine
 from uibe.store import now
+from uibe.engine import sha256
 
 
 class EngineIntegrationTests(unittest.TestCase):
@@ -51,5 +53,30 @@ class EngineIntegrationTests(unittest.TestCase):
                 with self.assertRaises(RuntimeError):e.discover(job)
             self.assertFalse((e.root/'creators'/cid/'discovery.json').exists())
             self.assertEqual(e.store.creator(cid)['checkpoint'],100)
+
+    def test_changed_asr_model_does_not_reuse_old_transcript(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            e=Engine(tmp);source=Path(tmp)/'sample.mp4';source.write_bytes(b'media fixture')
+            vid,_=e.import_file(source);job=e.store.claim_job();digest=sha256(source)
+            old=Path(tmp)/'old.json';old.write_text(json.dumps({'source':{'sha256':digest},'settings':{'model':'small'},'segments':[]}))
+            e.store.update_video(vid,transcript_path=str(old))
+            calls=[]
+            def fake_command(args,log,timeout=3600):
+                calls.append([str(a) for a in args]);output=Path(args[args.index('--output')+1])
+                if 'uibe.model_worker' in args:
+                    output.write_text(json.dumps({'source_sha256':digest,'relevant':True}))
+                else:
+                    target=output/'complete'/'transcript.json';target.parent.mkdir(parents=True)
+                    target.write_text(json.dumps({'source':{'sha256':digest},'settings':{'model':'medium'},'segments':[{'id':1,'text':'测试'}]}))
+                    # A newer cache from a different model must not win by mtime.
+                    wrong=output/'wrong-model'/'transcript.json';wrong.parent.mkdir()
+                    wrong.write_text(json.dumps({'source':{'sha256':digest},'settings':{'model':'small'},'segments':[]}))
+                    os.utime(wrong,(2000000000,2000000000))
+            with patch.object(e,'command',side_effect=fake_command):e.process(job)
+            self.assertEqual(len(calls),2)
+            self.assertTrue(any('transcribe.py' in part for part in calls[0]))
+            self.assertNotEqual(e.store.video(vid)['transcript_path'],str(old))
+            self.assertEqual(json.loads(Path(e.store.video(vid)['transcript_path']).read_text())['settings']['model'],'medium')
+            self.assertEqual(json.loads(old.read_text())['settings']['model'],'small')
 
 if __name__=='__main__':unittest.main()

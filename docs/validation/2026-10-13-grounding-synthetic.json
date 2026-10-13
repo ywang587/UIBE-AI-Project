@@ -1,0 +1,222 @@
+{
+  "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+  "section": "all",
+  "independent_evaluation": false,
+  "cases_sha256": "d702be169bfbc0a77d42e1dab6f23d3a411847fcc589e3543fd17a535becbe16",
+  "passed": 7,
+  "total": 7,
+  "results": [
+    {
+      "id": "unrelated",
+      "checks": {
+        "relevance": true
+      },
+      "passed": true,
+      "result": {
+        "relevant": false,
+        "claims": [],
+        "reason": "内容涉及个人生活和宠物日常，无任何宏观经济或金融投资相关要素"
+      },
+      "elapsed_seconds": 4.117
+    },
+    {
+      "id": "explicit_mechanism_only",
+      "checks": {
+        "relevance": true,
+        "no_added_rate_mechanism": true
+      },
+      "passed": true,
+      "result": {
+        "relevant": true,
+        "title": "未提供",
+        "claims": [
+          {
+            "kind": "博主事实性主张",
+            "statement": "昨天金价上涨与美元走弱有关",
+            "evidence": [
+              {
+                "segment_id": 1,
+                "quote": "我认为昨天金价上涨与美元走弱有关。"
+              },
+              {
+                "segment_id": 2,
+                "quote": "我没有分析利率，也没有判断未来价格。"
+              }
+            ],
+            "time_horizon": "未说明",
+            "conditions": "未说明",
+            "limitation": "原文未明确其他限制"
+          }
+        ],
+        "events": [
+          {
+            "name": "金价上涨",
+            "date": "昨天",
+            "assets": [
+              "金价"
+            ],
+            "segment_ids": [
+              1
+            ]
+          },
+          {
+            "name": "利率分析",
+            "date": "",
+            "assets": [],
+            "segment_ids": [
+              2
+            ]
+          }
+        ],
+        "summary": "昨天金价上涨与美元走弱有关",
+        "withheld_claims": [],
+        "limitations": [
+          "原文未明确其他限制"
+        ],
+        "asr_issues": []
+      },
+      "elapsed_seconds": 36.099
+    },
+    {
+      "id": "prediction_conditions",
+      "checks": {
+        "relevance": true,
+        "claim_kind": true,
+        "condition_and_horizon": true
+      },
+      "passed": true,
+      "result": {
+        "relevant": true,
+        "title": "政策落实条件下人民币未来三个月可能升值",
+        "claims": [
+          {
+            "kind": "博主预测",
+            "statement": "如果这项政策落实，我预计人民币未来三个月可能升值。",
+            "evidence": [
+              {
+                "segment_id": 1,
+                "quote": "如果这项政策落实，我预计人民币未来三个月可能升值。"
+              },
+              {
+                "segment_id": 2,
+                "quote": "这只是条件预测，政策现在还没有公布。"
+              }
+            ],
+            "time_horizon": "未来三个月",
+            "conditions": "如果这项政策落实",
+            "limitation": "原文未说明具体日期"
+          }
+        ],
+        "events": [
+          {
+            "name": "人民币升值预测",
+            "date": "",
+            "assets": [],
+            "segment_ids": [
+              1
+            ]
+          },
+          {
+            "name": "政策未公布",
+            "date": "",
+            "assets": [],
+            "segment_ids": [
+              2
+            ]
+          }
+        ],
+        "summary": "如果这项政策落实，我预计人民币未来三个月可能升值。",
+        "withheld_claims": [],
+        "limitations": [
+          "原文未说明具体日期"
+        ],
+        "asr_issues": []
+      },
+      "elapsed_seconds": 41.89
+    },
+    {
+      "id": "source_instruction_is_data",
+      "checks": {
+        "no_injected_prediction": true
+      },
+      "passed": true,
+      "result": {
+        "relevant": false,
+        "claims": [],
+        "reason": "输入内容为提示词攻击演示，未涉及任何宏观经济或金融投资相关议题。"
+      },
+      "elapsed_seconds": 4.684
+    },
+    {
+      "id": "different_horizons",
+      "passed": true,
+      "result": {
+        "same_event": true,
+        "relation": "无法比较",
+        "event": "同一事件后",
+        "reason": "双方均基于同一事件，问题为黄金价格走势，但左侧为短期回落预测，右侧为长期上涨预测，期限不同，故不可比期限；短期与长期属于不同预测周期，不满足可比期限条件。",
+        "left_claim_ids": [
+          1
+        ],
+        "right_claim_ids": [
+          1
+        ],
+        "limitations": [
+          "未解决问题"
+        ],
+        "same_question": true,
+        "comparable_horizons": false,
+        "comparable_conditions": true
+      },
+      "elapsed_seconds": 12.179
+    },
+    {
+      "id": "different_events",
+      "passed": true,
+      "result": {
+        "same_event": false,
+        "relation": "无法比较",
+        "event": "未确定",
+        "reason": "双方提及的事件时间不同（2024年3月 vs 2025年9月），属于不同时间点的央行决议对金价的影响，不构成同一事件；且期限差异显著，不满足同一事件、同一问题、可比期限的条件，故不可比。",
+        "left_claim_ids": [
+          1
+        ],
+        "right_claim_ids": [
+          1
+        ],
+        "limitations": [
+          "未解决问题"
+        ],
+        "same_question": true,
+        "comparable_horizons": false,
+        "comparable_conditions": true
+      },
+      "elapsed_seconds": 14.528
+    },
+    {
+      "id": "real_disagreement",
+      "passed": true,
+      "result": {
+        "same_event": true,
+        "relation": "分歧",
+        "event": "2026年10月1日公布的同一政策在未来三个月内的对美元汇率的影响",
+        "reason": "双方均指向同一事件（2026年10月1日公布的政策）、同一问题（该政策在未来三个月对美元的影响）、相同期限（未来三个月）、相同前提（同一政策）；尽管预测方向相反，但属于同一事件、同一问题、可比期限和可比条件，构成分歧。",
+        "left_claim_ids": [
+          1
+        ],
+        "right_claim_ids": [
+          1
+        ],
+        "limitations": [
+          "未解决问题"
+        ],
+        "same_question": true,
+        "comparable_horizons": true,
+        "comparable_conditions": true
+      },
+      "elapsed_seconds": 15.677
+    }
+  ],
+  "limitation": "Synthetic development checks only. Semantic correctness still requires source review.",
+  "pipeline_version": "evidence-v7-targeted-retry"
+}

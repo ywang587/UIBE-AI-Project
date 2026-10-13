@@ -141,12 +141,20 @@ class Engine:
         self.store.update_video(vid,sha256=digest)
         video=self.store.video(vid)
         transcript=Path(video['transcript_path']) if video['transcript_path'] else None
+        if transcript and transcript.is_file():
+            saved=json.loads(transcript.read_text())
+            if saved.get('settings',{}).get('model')!=self.settings['asr_model']:
+                transcript=None
         if not transcript or not transcript.is_file():
             self.stage(job,'转录音轨')
             # Restore ASR cache lookup for the existing medium model.
             args=[self.settings['asr_python'],REPO/'scripts/transcribe.py',source,'--output',out/'transcripts','--model',self.settings['asr_model']]
             self.command(args,out/'transcribe.log')
-            candidates=list((out/'transcripts').glob('*/transcript.json'))
+            candidates=[]
+            for candidate in (out/'transcripts').glob('*/transcript.json'):
+                saved=json.loads(candidate.read_text())
+                if saved.get('source',{}).get('sha256')==digest and saved.get('settings',{}).get('model')==self.settings['asr_model']:
+                    candidates.append(candidate)
             if not candidates:raise RuntimeError('转录没有产生完整结果')
             transcript=max(candidates,key=lambda p:p.stat().st_mtime)
             self.store.update_video(vid,transcript_path=str(transcript))

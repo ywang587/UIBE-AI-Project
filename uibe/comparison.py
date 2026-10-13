@@ -15,7 +15,9 @@ def payload(left,right):
         a=video['analysis']
         return {'title':video['title'],'author_name':video.get('author_name'),
                 'published_at':video.get('published_at'),'events':a.get('events',[]),
-                'claims':[{'claim_id':i+1,**c} for i,c in enumerate(a['claims'])]}
+                'claims':[{'claim_id':i+1,**{k:c[k] for k in
+                    ['kind','statement','time_horizon','conditions','evidence','limitation'] if k in c}}
+                    for i,c in enumerate(a['claims'])]}
     return [{'role':'system','content':SYSTEM},
             {'role':'user','content':json.dumps({'left':compact(left),'right':compact(right)},ensure_ascii=False)}]
 
@@ -37,10 +39,10 @@ def normalize(raw,left,right):
 def candidates(current,others,limit=2):
     def bigrams(text):return {text[i:i+2] for i in range(len(text)-1) if text[i:i+2].strip()}
     a=current['analysis'];query=bigrams(' '.join(e['name'] for e in a.get('events',[])))
-    if not query:return []
+    if not query or not a.get('claims'):return []
     ranked=[]
     for other in others:
-        if current['id']==other['id'] or not other.get('analysis'):continue
+        if current['id']==other['id'] or not other.get('analysis',{}).get('claims'):continue
         if current.get('author_id') and current['author_id']==other.get('author_id'):continue
         tokens=bigrams(' '.join(e['name'] for e in other['analysis'].get('events',[])))
         score=len(query & tokens)/max(1,len(query | tokens))

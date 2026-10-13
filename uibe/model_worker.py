@@ -4,8 +4,10 @@ import json
 import os
 from pathlib import Path
 import time
-from .analysis import chunks,messages,normalize,parse_json,combine
-from .structured import load_generator,extraction_schema,comparison_schema,filter_content
+import hashlib
+from .analysis import chunks,parse_json,combine,SYSTEM
+from .structured import load_generator,comparison_schema,filter_content
+from .extraction import extract_part,EVENT_SYSTEM,CORRECTION_SYSTEM
 
 
 def run(transcript, metadata, model, output, raw_dir):
@@ -22,21 +24,14 @@ def run(transcript, metadata, model, output, raw_dir):
                           'limitations':[],'asr_issues':[]})
             print(f'第 {index+1} 段与宏观金融无关，保留记录',flush=True)
             continue
-        chat=messages(segment_group,metadata)
-        for attempt in range(2):
-            text=generate(chat,extraction_schema(segment_group))
-            (raw_dir/f'chunk-{index}-attempt-{attempt}.txt').write_text(text,encoding='utf-8')
-            try:
-                part=normalize(parse_json(text),segment_group)
-                break
-            except (ValueError,TypeError,KeyError) as error:
-                if attempt:raise ValueError(f'模型输出未通过结构和证据检查：{error}') from error
-                # Do not feed back long invalid citation lists: they anchor the next answer.
-                chat=messages(segment_group,metadata)
-                chat.append({'role':'user','content':f'上次输出失败：{error}。这次只提取最多4条原子主张，每条不超过30个中文字，每条最多4个证据编号。主张太宽就缩小表述，只记录直接依据，不能列出整段连续编号。期限、条件没明说就填未说明。请输出完整 JSON。'})
+        def save(name,text):
+            (raw_dir/f'chunk-{index}-{name}').write_text(text,encoding='utf-8')
+        part=extract_part(generate,segment_group,metadata,save)
         parts.append(part)
         print(f'已分析 {index+1} 段输入',flush=True)
     result=combine(parts,transcript,model,time.monotonic()-started)
+    result['provenance'].update(getattr(generate,'provenance',{}))
+    result['provenance']['prompts_sha256']=hashlib.sha256(('\n'.join([SYSTEM,EVENT_SYSTEM,CORRECTION_SYSTEM])).encode()).hexdigest()
     output.parent.mkdir(parents=True,exist_ok=True)
     staging=output.with_suffix('.tmp')
     staging.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
