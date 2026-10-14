@@ -1,3 +1,16 @@
+# main 分支交接入口
+
+更新：2026-10-14。本分支不包含应用源码，以下旧记录仅供追溯，不代表项目最新状态。
+
+- [当前项目状态](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/PROJECT_STATE.md)
+- [新设备与 Codex 接手指南](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/HANDOFF.md)
+- [安装与运行](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/APP.md)
+- [独立环境复核](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/validation/2026-10-14-handoff-audit.md)
+
+程序在 `codex/local-pipeline-validation` 分支，PR #1 尚未合并。克隆时指定该分支；完整分析当前限 Apple Silicon / macOS 15+。不要根据下面的历史记录重复从零实现已有功能。
+
+---
+
 # 项目状态与下一步
 
 更新日期：2026-10-13（Asia/Shanghai）

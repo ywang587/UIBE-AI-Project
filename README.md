@@ -4,10 +4,17 @@
 
 ## 当前状态
 
-2026-10-13：已完成需求探索与部分材料、源码核查。本仓库目前是项目交接与进度记录，尚无可运行的整合 demo。
-已有本地 MediaCrawler 下载和中文转录成果；尚未迁入本仓库或在当前环境复现。
+**新同事 / 新设备先读 [交接指南](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/HANDOFF.md)**。2026-10-14 独立 Linux 环境已通过基础依赖安装、53 项工程测试与服务启动；完整模型分析仍仅支持下述 Apple Silicon 环境，详见 [复核记录](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/validation/2026-10-14-handoff-audit.md)。开发 AI 请同时阅读 [程序分支的 AGENTS.md](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/AGENTS.md)。
 
-继续工作请先读 [项目状态与下一步](docs/PROJECT_STATE.md)。
+**下载应用请使用 [`codex/local-pipeline-validation` 分支](https://github.com/ywang587/UIBE-AI-Project/tree/codex/local-pipeline-validation)**（Code → Download ZIP）。`main` 尚是旧交接文档。新设备所需环境、安装步骤、模型下载及可选的抖音登录见 [完整安装说明](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/APP.md)。不需要上传或复制原来的本地测试视频。
+
+2026-10-13：已接续可访问本地材料的环境，新增“观潮”本地应用。导入本地视频或抖音链接后，程序依次下载、转录、用本地模型提取主张，并将原文与可回放的时间位置一起展示，不需要付费 API。
+
+应用提供历史记录、关注博主、启动补查、失败重试、同事件候选对照和已导入内容的事件简报。涉及美国债务规模时，还会单独显示带日期的官方背景，保留原始数值与来源；这不等于自动事实核查。自动分析与历史开发 AI 手工样例分别记录来源；结构与引文检查不等于分析准确率证明。
+
+**启动应用：** 见 [观潮安装与使用](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/APP.md)。当前本地推理使用 Apple Silicon 上的 MLX；其他系统的推理后端尚未实现。已有工具见 [运行与换设备接续](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/RUNNING.md)。
+
+本机现存六条真实视频记录，新增长视频及跨作者对照、失败修复和局限见 [首版交付验证](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/validation/2026-10-13-real-pair.md)。此前应用运行见 [应用验证](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/validation/2026-10-13-workbench.md)，前一阶段见 [本地接续验证](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/validation/2026-10-13-local-pipeline.md)。继续工作请先读 [项目状态与下一步](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/PROJECT_STATE.md)。
 
 ## 已确认的产品目标
 
@@ -17,7 +24,7 @@
 - 提供单条视频解读、同事件跨博主对照，并逐步形成事件简报。
 - 在程序内查看结果、历史和原视频；没有对照材料时先显示单条结果。
 - 无关视频保留更新记录，不生成完整分析。
-- 先解释已经发生的变化；预测分析作为后续工作。
+- 先解释已经发生的变化，保留原视频明确提出的预测与条件；预测准确性评估留待后续。
 
 ## 分析边界
 
@@ -42,6 +49,6 @@ GitHub 保存项目代码、依赖说明、分析规则、测试结果与下一�
 
 - [MediaCrawler](https://github.com/NanmiCoder/MediaCrawler)
 - 用户材料记录的基线提交：`e9dd17a16338c3915f2335bc609383d316e055f2`
-- 已有中文转录使用 Faster-Whisper；最终应用形态、分析模型和 API 尚未选定。
+- 中文转录使用 Faster-Whisper；应用为本机浏览器界面，分析使用可替换的 Qwen3 4B 本地模型。
 
 接入外部组件前检查其许可与本地修改，不直接复制整套依赖环境进本仓库。
