@@ -1,0 +1,58 @@
+{
+  "purpose": "Historical input identifiers only; no original media, transcript or private paths",
+  "asr_model": "Systran/faster-whisper-medium",
+  "asr_revision": "08e178d48790749d25932bbc082711ddcfdfbc4f",
+  "analysis_model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+  "analysis_revision": "50d427756c6b1b2fe0c0a10f67fbda1fc8e82c1b",
+  "cases": [
+    {
+      "title": "印度经济困境：外汇储备与卢比走势",
+      "video_id": "7694084865286034427",
+      "url": "https://www.douyin.com/video/7694084865286034427",
+      "sha256": "879a528e1493c452a993aaec76ef1a78e17c9f7dd221e4766e6bea6786311ff0",
+      "duration_seconds": 37.03725
+    },
+    {
+      "title": "日本抛美债，美联储还敢加息吗",
+      "video_id": "7693562527745599146",
+      "url": "https://www.douyin.com/video/7693562527745599146",
+      "sha256": "40d1021d670a99cad3d58e9f2e855507397ac887099d7ee9c4f2a12d6b1058be",
+      "duration_seconds": 933.3739375
+    },
+    {
+      "title": "外资为什么重新开始看中国资产",
+      "video_id": "7695692306247499738",
+      "url": "https://www.douyin.com/video/7695692306247499738",
+      "sha256": "356502fd7f6af11b3b7bf24fa0e297de94ff7756b50581ff634e53e4bd2c6ad5",
+      "duration_seconds": 387.14775
+    },
+    {
+      "title": "机票乌龙 可以跟我说今天飞，今天到机场了，发现票是昨天的，幸亏今天早来一小时，重新买了张票#笑不活了家人们 #一个人出国旅游",
+      "video_id": "7692700958799591662",
+      "url": "https://www.douyin.com/video/7692700958799591662",
+      "sha256": "40ea4d0b0fbc579c797f9aa19d2797f7acc5763f708d4c30b0fe449f77a858c2",
+      "duration_seconds": 24.3126875
+    },
+    {
+      "title": "美国国债超四十万亿！国家为什么总爱借钱? #国家经济 #财经 #燃起来了大国重器 #真财实学计划",
+      "video_id": "7693573120950603018",
+      "url": "https://www.douyin.com/video/7693573120950603018",
+      "sha256": "a00fd1ab6ce269a4801f55ca9d75dc835c96bccae5b7826eac32318f8334e321",
+      "duration_seconds": 658.867625
+    },
+    {
+      "title": "美债越欠越多，美国越来越强！ #美债突破40万亿  #美债 #美国经济 #财经",
+      "video_id": "7694611088712666394",
+      "url": "https://www.douyin.com/video/7694611088712666394",
+      "sha256": "afcf176be9182bb6e0d1386d32dc68d65aa1da22dd52524c305a6fd5a3b91ce1",
+      "duration_seconds": 430.104625
+    },
+    {
+      "title": "史上最大现金收购案 富二代如何正确拼爹 #真财实学计划  #零距离看懂财经 #华纳",
+      "video_id": "7694586117093444890",
+      "url": "https://www.douyin.com/video/7694586117093444890",
+      "sha256": "c9c7a9699d350e8133aa10f616dc142c498a711a97dc28071d7129b11016bb4b",
+      "duration_seconds": 833.8285625
+    }
+  ]
+}

@@ -1,0 +1,326 @@
+{
+  "model": "mlx-community/Qwen3.5-4B-4bit",
+  "review_version": "source-consistency-v1",
+  "independent_evaluation": false,
+  "cases_sha256": "861901a347a0a0be4f283d85395e74922a1e2185264c18d01dca7a3addde11c0",
+  "passed": 8,
+  "total": 15,
+  "results": [
+    {
+      "id": "supported_fact",
+      "checks": {
+        "support": true,
+        "kind": true
+      },
+      "passed": true,
+      "result": {
+        "issues": [],
+        "causal_alignment": "未涉及因果",
+        "modality_alignment": "一致",
+        "speaker_alignment": "一致",
+        "recommended_kind": "博主事实性主张",
+        "support": "完整支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 8.667
+    },
+    {
+      "id": "missing_actor_action",
+      "checks": {
+        "support": true
+      },
+      "passed": true,
+      "result": {
+        "issues": [
+          "主体缺失：引用中未提及'央行'或'抛售美元'的具体行为，仅描述了油价、美债收益率和卢比汇率的变动。",
+          "数值缺失：引用中未包含任何数值数据。",
+          "条件缺失：引用中未说明'抛售美元'发生的具体条件或背景。",
+          "时态缺失：引用中未说明'抛售美元'是过去、现在还是未来的行为。"
+        ],
+        "causal_alignment": "未涉及因果",
+        "modality_alignment": "原文不足以判断",
+        "speaker_alignment": "原文不足以判断",
+        "recommended_kind": "博主事实性主张",
+        "support": "部分支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 15.904
+    },
+    {
+      "id": "new_causal_link",
+      "checks": {
+        "support": true
+      },
+      "passed": true,
+      "result": {
+        "issues": [
+          "原文仅陈述油价上涨与卢比汇率走弱同时发生，未明确两者之间的因果关系。将‘同时发生’直接推导为‘导致’属于因果推断，原文未提供因果机制或排除其他变量的依据。",
+          "原文未说明时间先后顺序，无法确认油价上涨是否先于汇率走弱发生，因此不能支持‘油价上涨导致卢比汇率走弱’这一因果主张。",
+          "原文未排除其他可能影响卢比汇率的因素（如货币政策、贸易平衡等），因此不能支持单一因果关系的结论。"
+        ],
+        "causal_alignment": "原文不足以判断",
+        "modality_alignment": "原文不足以判断",
+        "speaker_alignment": "原文不足以判断",
+        "recommended_kind": "博主事实性主张",
+        "support": "部分支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 17.747
+    },
+    {
+      "id": "reversed_cause",
+      "checks": {
+        "support": true
+      },
+      "passed": true,
+      "result": {
+        "issues": [
+          "因果方向错误：原文主张'卢比走弱导致油价上涨'，但引用仅支持'油价上涨增加进口成本，从而对卢比形成压力'。原文将 A 导致 B，引用仅支持 B 导致 A。",
+          "因果对象错误：原文主张卢比走弱是因，油价上涨是果；引用中油价上涨是因，卢比走弱是果。",
+          "时态/事实性错误：原文为事实性主张，引用为博主观点（'博主认为'），且引用描述的是过去或已发生的逻辑关系，原文未说明时间背景。"
+        ],
+        "causal_alignment": "原文不足以判断",
+        "modality_alignment": "原文不足以判断",
+        "speaker_alignment": "原文不足以判断",
+        "recommended_kind": "博主解释",
+        "support": "部分支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 17.976
+    },
+    {
+      "id": "wrong_causal_target",
+      "checks": {
+        "support": true
+      },
+      "passed": true,
+      "result": {
+        "issues": [
+          "因果倒置：原文表述为'受油价高企及外资撤出影响'，即油价高企和外资撤出是原因，卢比走弱是结果；而博主主张将其表述为'油价高企和外资撤出导致央行持续干预'，将'央行持续干预'作为结果，但原文中'央行持续干预'是作为'尽管'的让步条件，即央行在干预，但卢比仍走弱，并未表明油价高企和外资撤出导致了央行持续干预。",
+          "时态/事实性混淆：原文中'卢比仍在走弱'是描述当前或过去一段时间的状态，而博主主张'导致央行持续干预'将'央行持续干预'表述为一种由油价高企和外资撤出导致的结果，但原文中'央行持续干预'是作为背景条件存在，并非由油价高企和外资撤出直接导致。",
+          "主体错位：原文中'受油价高企及外资撤出影响'的主体是'卢比'，即油价高企和外资撤出影响了卢比；而博主主张将'央行持续干预'作为结果，即油价高企和外资撤出导致央行持续干预，这与原文中'央行持续干预'是作为背景条件存在，并非由油价高企和外资撤出直接导致。"
+        ],
+        "causal_alignment": "原文不足以判断",
+        "modality_alignment": "原文不足以判断",
+        "speaker_alignment": "原文不足以判断",
+        "recommended_kind": "博主事实性主张",
+        "support": "部分支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 28.307
+    },
+    {
+      "id": "supported_explanation",
+      "checks": {
+        "support": false,
+        "kind": false
+      },
+      "passed": false,
+      "result": {
+        "issues": [
+          "引用中仅陈述博主观点，未提供原文中博主解释卢比压力与油价上涨之间因果关系的直接依据，无法确认博主是否确实将卢比压力解释为油价上涨带来的进口成本增加。"
+        ],
+        "causal_alignment": "未涉及因果",
+        "modality_alignment": "一致",
+        "speaker_alignment": "一致",
+        "recommended_kind": "博主事实性主张",
+        "support": "部分支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 12.741
+    },
+    {
+      "id": "condition_and_certainty_changed",
+      "checks": {
+        "support": true
+      },
+      "passed": true,
+      "result": {
+        "issues": [
+          "1. 时态与因果错误：原文为'预计未来三个月'（未来预测），博主将其表述为'已经落实'（过去事实）及'一定'（必然结果），将可能性的预测强化为既定事实。",
+          "2. 条件缺失：原文条件为'如果政策落实'，博主直接陈述'政策已经落实'，未体现原文的条件假设。",
+          "3. 概率改变：原文为'可能'，博主改为'一定'。"
+        ],
+        "causal_alignment": "原文不足以判断",
+        "modality_alignment": "原文不足以判断",
+        "speaker_alignment": "原文不足以判断",
+        "recommended_kind": "博主事实性主张",
+        "support": "部分支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 17.317
+    },
+    {
+      "id": "conditional_prediction",
+      "checks": {
+        "support": false,
+        "kind": true
+      },
+      "passed": false,
+      "result": {
+        "issues": [],
+        "causal_alignment": "未涉及因果",
+        "modality_alignment": "原文不足以判断",
+        "speaker_alignment": "一致",
+        "recommended_kind": "博主预测",
+        "support": "部分支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 10.031
+    },
+    {
+      "id": "historical_data_not_explanation",
+      "checks": {
+        "support": false,
+        "kind": true
+      },
+      "passed": false,
+      "result": {
+        "issues": [],
+        "causal_alignment": "未涉及因果",
+        "modality_alignment": "原文不足以判断",
+        "speaker_alignment": "一致",
+        "recommended_kind": "博主事实性主张",
+        "support": "完整支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 11.976
+    },
+    {
+      "id": "evaluation_not_fact",
+      "checks": {
+        "support": false,
+        "kind": false
+      },
+      "passed": false,
+      "result": {
+        "issues": [],
+        "causal_alignment": "未涉及因果",
+        "modality_alignment": "原文不足以判断",
+        "speaker_alignment": "一致",
+        "recommended_kind": "博主事实性主张",
+        "support": "部分支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 11.247
+    },
+    {
+      "id": "advice_not_promotion",
+      "checks": {
+        "support": false,
+        "kind": false
+      },
+      "passed": false,
+      "result": {
+        "issues": [],
+        "causal_alignment": "未涉及因果",
+        "modality_alignment": "原文不足以判断",
+        "speaker_alignment": "一致",
+        "recommended_kind": "博主事实性主张",
+        "support": "部分支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 10.141
+    },
+    {
+      "id": "explicit_promotion",
+      "checks": {
+        "support": false,
+        "kind": false
+      },
+      "passed": false,
+      "result": {
+        "issues": [],
+        "causal_alignment": "未涉及因果",
+        "modality_alignment": "原文不足以判断",
+        "speaker_alignment": "一致",
+        "recommended_kind": "博主事实性主张",
+        "support": "完整支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 9.741
+    },
+    {
+      "id": "negation_changed",
+      "checks": {
+        "support": true
+      },
+      "passed": true,
+      "result": {
+        "issues": [
+          "主体不一致：主张主体为'央行'，引用主体为'央行'，主体一致。",
+          "数值不一致：主张为'降息'，引用为'没有降息'，数值/状态完全相反。",
+          "时态不一致：主张为'已经'（过去完成时），引用为'没有'（否定陈述），时态/状态冲突。",
+          "因果不一致：主张为事实性陈述，引用为直接否定该事实，无因果链条。"
+        ],
+        "causal_alignment": "未涉及因果",
+        "modality_alignment": "原文不足以判断",
+        "speaker_alignment": "一致",
+        "recommended_kind": "博主事实性主张",
+        "support": "不支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 16.233
+    },
+    {
+      "id": "support_is_not_truth",
+      "checks": {
+        "support": false,
+        "kind": true
+      },
+      "passed": false,
+      "result": {
+        "issues": [
+          "引用中博主明确表达为'预测'，属于博主预测，与'博主事实性主张'分类冲突。",
+          "引用中未说明任何条件，但博主主张中未提及条件，故无需补充。",
+          "引用中未说明时态，但博主主张中明确为'明年'，属于未来时态。",
+          "引用中未说明因果，但博主主张中未提及因果。"
+        ],
+        "causal_alignment": "未涉及因果",
+        "modality_alignment": "原文不足以判断",
+        "speaker_alignment": "一致",
+        "recommended_kind": "博主预测",
+        "support": "部分支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 15.659
+    },
+    {
+      "id": "attribution_changed",
+      "checks": {
+        "support": true
+      },
+      "passed": true,
+      "result": {
+        "issues": [
+          "引用中博主并未直接主张黄金会下跌，而是转述他人预测并表达不同意，导致博主事实性主张缺乏直接依据",
+          "引用中未说明预测的时间范围，无法验证博主主张的具体时间维度",
+          "引用中未说明预测的具体条件，无法验证博主主张的适用条件"
+        ],
+        "causal_alignment": "未涉及因果",
+        "modality_alignment": "原文不足以判断",
+        "speaker_alignment": "原文不足以判断",
+        "recommended_kind": "博主事实性主张",
+        "support": "部分支持",
+        "version": "source-consistency-v1",
+        "independently_evaluated": false
+      },
+      "elapsed_seconds": 13.746
+    }
+  ],
+  "deployment_decision": "Not enabled as an application acceptance gate: positive controls are rejected."
+}

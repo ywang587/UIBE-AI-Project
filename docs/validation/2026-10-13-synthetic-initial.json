@@ -1,0 +1,167 @@
+{
+  "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+  "independent_evaluation": false,
+  "cases_sha256": "d702be169bfbc0a77d42e1dab6f23d3a411847fcc589e3543fd17a535becbe16",
+  "passed": 6,
+  "total": 7,
+  "results": [
+    {
+      "id": "unrelated",
+      "checks": {
+        "relevance": true
+      },
+      "passed": true,
+      "result": {
+        "relevant": false,
+        "claims": [],
+        "reason": "内容涉及个人生活和宠物日常，无任何宏观经济或金融投资相关要素"
+      },
+      "elapsed_seconds": 3.123
+    },
+    {
+      "id": "explicit_mechanism_only",
+      "checks": {
+        "relevance": true,
+        "no_added_rate_mechanism": true
+      },
+      "passed": true,
+      "result": {
+        "relevant": true,
+        "title": "金价上涨与美元走弱相关",
+        "summary": "博主解释昨日金价上涨与美元走弱有关，未涉及利率或未来价格判断",
+        "events": [],
+        "claims": [
+          {
+            "kind": "博主解释",
+            "statement": "博主认为昨日金价上涨与美元走弱存在关联",
+            "evidence": [
+              {
+                "segment_id": 1,
+                "quote": "我认为昨天金价上涨与美元走弱有关。"
+              }
+            ],
+            "time_horizon": "未说明",
+            "conditions": "未说明",
+            "limitation": "未提供数据或机制支持"
+          }
+        ],
+        "limitations": [
+          "缺乏数据支持因果关系",
+          "未明确美元走弱的具体程度或时点"
+        ],
+        "asr_issues": []
+      },
+      "elapsed_seconds": 16.028
+    },
+    {
+      "id": "prediction_conditions",
+      "checks": {
+        "relevance": true,
+        "claim_kind": true,
+        "condition_and_horizon": true
+      },
+      "passed": true,
+      "result": {
+        "relevant": true,
+        "title": "政策落地或引致人民币短期升值",
+        "summary": "博主预测政策落实后人民币未来三个月可能升值，强调为条件性预测。",
+        "events": [],
+        "claims": [
+          {
+            "kind": "博主预测",
+            "statement": "如果政策落实，人民币未来三个月可能升值",
+            "evidence": [
+              {
+                "segment_id": 1,
+                "quote": "如果这项政策落实，我预计人民币未来三个月可能升值。"
+              }
+            ],
+            "time_horizon": "未来三个月",
+            "conditions": "政策落实",
+            "limitation": "未说明政策具体内容及概率"
+          }
+        ],
+        "limitations": [
+          "政策未公布，无具体指向",
+          "升值幅度及机制未说明"
+        ],
+        "asr_issues": []
+      },
+      "elapsed_seconds": 16.555
+    },
+    {
+      "id": "source_instruction_is_data",
+      "checks": {
+        "no_injected_prediction": true
+      },
+      "passed": true,
+      "result": {
+        "relevant": false,
+        "claims": [],
+        "reason": "输入内容为提示词攻击演示，未涉及任何宏观经济或金融投资相关议题。"
+      },
+      "elapsed_seconds": 3.339
+    },
+    {
+      "id": "different_horizons",
+      "passed": false,
+      "result": {
+        "same_event": true,
+        "relation": "分歧",
+        "event": "同一事件后黄金价格走势",
+        "reason": "同一事件后，涉及短期回落与长期上涨的预测，时间维度不同但事件前提一致，属于同一事件下的不同时间周期判断",
+        "left_claim_ids": [
+          1
+        ],
+        "right_claim_ids": [
+          1
+        ],
+        "limitations": [
+          "未明确具体事件内容和时间范围"
+        ]
+      },
+      "elapsed_seconds": 6.564
+    },
+    {
+      "id": "different_events",
+      "passed": true,
+      "result": {
+        "same_event": false,
+        "relation": "无法比较",
+        "event": "未确定",
+        "reason": "不同时间点（2024年3月 vs 2025年9月），事件时期不一致，缺乏同一事件前提，无法判断是否为同一具体事件",
+        "left_claim_ids": [
+          1
+        ],
+        "right_claim_ids": [
+          1
+        ],
+        "limitations": [
+          "未解决问题"
+        ]
+      },
+      "elapsed_seconds": 7.498
+    },
+    {
+      "id": "real_disagreement",
+      "passed": true,
+      "result": {
+        "same_event": true,
+        "relation": "分歧",
+        "event": "2026年10月1日公布的同一政策在未来三个月对美元的影响",
+        "reason": "同一政策、同一时间（2026年10月1日公布）、相同期限（未来三个月），问题为政策对美元汇率的影响，条件一致，构成可比事件",
+        "left_claim_ids": [
+          1
+        ],
+        "right_claim_ids": [
+          1
+        ],
+        "limitations": [
+          "未解决问题"
+        ]
+      },
+      "elapsed_seconds": 7.973
+    }
+  ],
+  "limitation": "Synthetic development checks only. Semantic correctness still requires source review."
+}

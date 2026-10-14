@@ -1,0 +1,72 @@
+{
+  "source_sha256": "598b9e87f59d30989bdb81bce5e8b9bbda7b9d0d8091975c0858fb5847e24f9d",
+  "evaluation_type": "developer source review; not independent",
+  "criteria": "2026-10-13-holdout-criteria.json",
+  "runs": {
+    "v6": {
+      "claims": 3,
+      "elapsed_seconds": 247.789
+    },
+    "v7": {
+      "claims": 11,
+      "elapsed_seconds": 217.03,
+      "provenance": {
+        "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+        "prompt_version": "evidence-v7-targeted-retry",
+        "chunks": 1,
+        "elapsed_seconds": 217.03,
+        "independently_evaluated": false,
+        "guards": [
+          "bounded_complete_spans",
+          "arabic_numeric_coverage",
+          "literal_horizons_conditions_dates",
+          "summary_from_claims"
+        ],
+        "mlx_lm": "0.32.0",
+        "outlines": "1.3.3",
+        "temperature": 0,
+        "thinking": false,
+        "model_revision": "50d427756c6b1b2fe0c0a10f67fbda1fc8e82c1b",
+        "prompts_sha256": "5eedd8da1ceef08292ef9d6127a2db2cd0abd251b452b65ab69be6c68cf205d4"
+      }
+    }
+  },
+  "findings": [
+    {
+      "criterion": "divestiture",
+      "status": "partial",
+      "note": "Stake, proceeds and target retained after targeted retry; actor wording needs review and explicit half-year horizon is missing from its field."
+    },
+    {
+      "criterion": "motive",
+      "status": "missed",
+      "note": "Urgent funding motive appears in quoted source but is not captured as a distinct explanation."
+    },
+    {
+      "criterion": "currency_not_inferred",
+      "status": "not_covered",
+      "note": "Capital-outflow amount was not extracted; no demonstrated ability to preserve its unspecified currency."
+    },
+    {
+      "criterion": "conditional_forecast",
+      "status": "partial",
+      "note": "Future warning and explicit condition preserved after correcting citation; horizon incorrectly contains an entire conditional sentence."
+    },
+    {
+      "criterion": "evaluation",
+      "status": "pass",
+      "note": "Metaphorical criticism is classified as evaluation."
+    },
+    {
+      "criterion": "no_fabricated_date",
+      "status": "pass",
+      "note": "Invented numerical title rejected; final event dates remain unspecified."
+    }
+  ],
+  "additional_issues": [
+    "Future difficulty appears as explanation/evaluation rather than prediction.",
+    "One paraphrase adds a characterization not explicit in the source.",
+    "Event assets include amounts rather than only asset names."
+  ],
+  "decision": "Targeted retry preserves other claims, but semantic quality is not accepted as solved. Existing application analyses were not overwritten."
+}

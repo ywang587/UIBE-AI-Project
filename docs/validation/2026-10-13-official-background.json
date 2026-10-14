@@ -1,0 +1,21 @@
+{
+  "kind": "external_background",
+  "status": "available",
+  "source": "美国财政部 Fiscal Data",
+  "title": "美国联邦债务规模与构成",
+  "dataset_url": "https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/",
+  "data_url": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?fields=record_date%2Cdebt_held_public_amt%2Cintragov_hold_amt%2Ctot_pub_debt_out_amt&filter=record_date%3Aeq%3A2026-10-08&page%5Bsize%5D=1",
+  "query_url": "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?fields=record_date%2Cdebt_held_public_amt%2Cintragov_hold_amt%2Ctot_pub_debt_out_amt&filter=record_date%3Alte%3A2026-10-13&sort=-record_date&page%5Bsize%5D=1",
+  "record_sha256": "3ad9a4667bad8dc2ae42291ea453c5fab858f219104eae18389023344edf5b4e",
+  "record_date": "2026-10-08",
+  "requested_as_of": "2026-10-13",
+  "retrieved_at": "2026-10-13T08:54:21.452606+00:00",
+  "unit": "USD",
+  "values": {
+    "debt_held_public_amt": "32454086117711.32",
+    "intragov_hold_amt": "7851230093118.40",
+    "tot_pub_debt_out_amt": "40305316210829.72"
+  },
+  "scope": "财政部记录的联邦债务总额由公众持有债务与政府内部持有债务组成。",
+  "limitation": "这是带日期的外部背景，可能晚于视频事件；不代表当时已知信息，也不证明博主的因果解释。"
+}

@@ -4,17 +4,19 @@
 
 ## 当前状态
 
-**新同事 / 新设备先读 [交接指南](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/HANDOFF.md)**。2026-10-14 独立 Linux 环境已通过基础依赖安装、53 项工程测试与服务启动；完整模型分析仍仅支持下述 Apple Silicon 环境，详见 [复核记录](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/validation/2026-10-14-handoff-audit.md)。开发 AI 请同时阅读 [程序分支的 AGENTS.md](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/AGENTS.md)。
+**队友只拿到仓库链接时，从 [完整复现与调试步骤](docs/REPRODUCING.md) 开始。** 提供 Mac 依赖版本快照、可独立执行的页面测试、自动生成语音的真实模型流程、历史视频指纹与公开输入清单；无需原聊天记录，也不上传本地测试视频。
 
-**下载应用请使用 [`codex/local-pipeline-validation` 分支](https://github.com/ywang587/UIBE-AI-Project/tree/codex/local-pipeline-validation)**（Code → Download ZIP）。`main` 尚是旧交接文档。新设备所需环境、安装步骤、模型下载及可选的抖音登录见 [完整安装说明](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/APP.md)。不需要上传或复制原来的本地测试视频。
+**新同事 / 新设备先读 [交接指南](docs/HANDOFF.md)**。2026-10-14 独立 Linux 环境已通过基础依赖安装、53 项工程测试与服务启动；完整模型分析仍仅支持下述 Apple Silicon 环境，详见 [复核记录](docs/validation/2026-10-14-handoff-audit.md)。开发 AI 请同时阅读根目录 `AGENTS.md`。
+
+**下载应用请使用 [`codex/local-pipeline-validation` 分支](https://github.com/ywang587/UIBE-AI-Project/tree/codex/local-pipeline-validation)**（Code → Download ZIP）。`main` 尚是旧交接文档。新设备所需环境、安装步骤、模型下载及可选的抖音登录见 [完整安装说明](docs/APP.md)。不需要上传或复制原来的本地测试视频。
 
 2026-10-13：已接续可访问本地材料的环境，新增“观潮”本地应用。导入本地视频或抖音链接后，程序依次下载、转录、用本地模型提取主张，并将原文与可回放的时间位置一起展示，不需要付费 API。
 
 应用提供历史记录、关注博主、启动补查、失败重试、同事件候选对照和已导入内容的事件简报。涉及美国债务规模时，还会单独显示带日期的官方背景，保留原始数值与来源；这不等于自动事实核查。自动分析与历史开发 AI 手工样例分别记录来源；结构与引文检查不等于分析准确率证明。
 
-**启动应用：** 见 [观潮安装与使用](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/APP.md)。当前本地推理使用 Apple Silicon 上的 MLX；其他系统的推理后端尚未实现。已有工具见 [运行与换设备接续](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/RUNNING.md)。
+**启动应用：** 见 [观潮安装与使用](docs/APP.md)。当前本地推理使用 Apple Silicon 上的 MLX；其他系统的推理后端尚未实现。已有工具见 [运行与换设备接续](docs/RUNNING.md)。
 
-本机现存六条真实视频记录，新增长视频及跨作者对照、失败修复和局限见 [首版交付验证](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/validation/2026-10-13-real-pair.md)。此前应用运行见 [应用验证](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/validation/2026-10-13-workbench.md)，前一阶段见 [本地接续验证](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/validation/2026-10-13-local-pipeline.md)。继续工作请先读 [项目状态与下一步](https://github.com/ywang587/UIBE-AI-Project/blob/codex/local-pipeline-validation/docs/PROJECT_STATE.md)。
+原 Mac 的历史真实视频、跨作者对照、失败修复和局限见 [首版交付验证](docs/validation/2026-10-13-real-pair.md)。此前应用运行见 [应用验证](docs/validation/2026-10-13-workbench.md)，前一阶段见 [本地接续验证](docs/validation/2026-10-13-local-pipeline.md)。继续工作请先读 [项目状态与下一步](docs/PROJECT_STATE.md)。
 
 ## 已确认的产品目标
 
