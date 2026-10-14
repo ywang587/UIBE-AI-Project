@@ -2,6 +2,8 @@
 
 观潮把本地视频或抖音分享链接放入处理队列，依次获取视频、转录、提取主张，再将分析与原文证据一起显示。窗口内可查看历史、关注博主的新发现及失败记录。分析采用本地模型，不需要 API 密钥。
 
+首次接手、复跑已有测试或继续修改程序，另见 [完整复现与调试步骤](REPRODUCING.md)。其中提供 Mac / Python 3.11 的依赖快照、可生成的测试素材、历史公开输入清单和各级验证命令。
+
 ## 换一台电脑：先下载正确版本
 
 当前可运行应用位于 [`codex/local-pipeline-validation` 分支](https://github.com/ywang587/UIBE-AI-Project/tree/codex/local-pipeline-validation)，尚未合入 `main`。直接下载默认分支会得到旧交接资料。

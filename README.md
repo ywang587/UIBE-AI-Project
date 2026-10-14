@@ -4,6 +4,8 @@
 
 ## 当前状态
 
+**队友只拿到仓库链接时，从 [完整复现与调试步骤](docs/REPRODUCING.md) 开始。** 提供 Mac 依赖版本快照、可独立执行的页面测试、自动生成语音的真实模型流程、历史视频指纹与公开输入清单；无需原聊天记录，也不上传本地测试视频。
+
 **新同事 / 新设备先读 [交接指南](docs/HANDOFF.md)**。2026-10-14 独立 Linux 环境已通过基础依赖安装、53 项工程测试与服务启动；完整模型分析仍仅支持下述 Apple Silicon 环境，详见 [复核记录](docs/validation/2026-10-14-handoff-audit.md)。开发 AI 请同时阅读根目录 `AGENTS.md`。
 
 **下载应用请使用 [`codex/local-pipeline-validation` 分支](https://github.com/ywang587/UIBE-AI-Project/tree/codex/local-pipeline-validation)**（Code → Download ZIP）。`main` 尚是旧交接文档。新设备所需环境、安装步骤、模型下载及可选的抖音登录见 [完整安装说明](docs/APP.md)。不需要上传或复制原来的本地测试视频。
@@ -14,7 +16,7 @@
 
 **启动应用：** 见 [观潮安装与使用](docs/APP.md)。当前本地推理使用 Apple Silicon 上的 MLX；其他系统的推理后端尚未实现。已有工具见 [运行与换设备接续](docs/RUNNING.md)。
 
-本机现存六条真实视频记录，新增长视频及跨作者对照、失败修复和局限见 [首版交付验证](docs/validation/2026-10-13-real-pair.md)。此前应用运行见 [应用验证](docs/validation/2026-10-13-workbench.md)，前一阶段见 [本地接续验证](docs/validation/2026-10-13-local-pipeline.md)。继续工作请先读 [项目状态与下一步](docs/PROJECT_STATE.md)。
+原 Mac 的历史真实视频、跨作者对照、失败修复和局限见 [首版交付验证](docs/validation/2026-10-13-real-pair.md)。此前应用运行见 [应用验证](docs/validation/2026-10-13-workbench.md)，前一阶段见 [本地接续验证](docs/validation/2026-10-13-local-pipeline.md)。继续工作请先读 [项目状态与下一步](docs/PROJECT_STATE.md)。
 
 ## 已确认的产品目标
 
