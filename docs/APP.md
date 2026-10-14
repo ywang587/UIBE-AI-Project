@@ -87,6 +87,8 @@ PLAYWRIGHT_BROWSERS_PATH="$PWD/.browsers" .venv/bin/python main.py \
 | MediaCrawler Python | 上述目录内 `.venv/bin/python` 的绝对路径 |
 | Node.js 所在目录 | `command -v node` 返回路径的父目录；例如返回 `/opt/homebrew/bin/node` 时填写 `/opt/homebrew/bin` |
 
+项目已确定关注 **Darling凯文Kevin** 和 **小Lin说**，名称及公开主页见 [`config/followed_creators.json`](../config/followed_creators.json)，具体添加步骤见[复现指南](REPRODUCING.md#已确定的两位关注博主)。清单不会自动导入。
+
 保存后添加一个博主并检查更新。先保留“自动下载、转录和分析新发现的视频”为关闭，手动选一条验证。登录失效时重新执行登录步骤；观潮不会自动代为扫码或处理验证码。下载受平台可见性、账号状态和网络影响；安装完成不保证任意视频都能下载。外部组件仍遵循其自身许可。
 
 ## 常见安装与运行问题
