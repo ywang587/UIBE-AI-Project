@@ -4,6 +4,8 @@
 
 ## 当前状态
 
+**新同事 / 新设备先读 [交接指南](docs/HANDOFF.md)**。2026-10-14 独立 Linux 环境已通过基础依赖安装、53 项工程测试与服务启动；完整模型分析仍仅支持下述 Apple Silicon 环境，详见 [复核记录](docs/validation/2026-10-14-handoff-audit.md)。开发 AI 请同时阅读根目录 `AGENTS.md`。
+
 **下载应用请使用 [`codex/local-pipeline-validation` 分支](https://github.com/ywang587/UIBE-AI-Project/tree/codex/local-pipeline-validation)**（Code → Download ZIP）。`main` 尚是旧交接文档。新设备所需环境、安装步骤、模型下载及可选的抖音登录见 [完整安装说明](docs/APP.md)。不需要上传或复制原来的本地测试视频。
 
 2026-10-13：已接续可访问本地材料的环境，新增“观潮”本地应用。导入本地视频或抖音链接后，程序依次下载、转录、用本地模型提取主张，并将原文与可回放的时间位置一起展示，不需要付费 API。
